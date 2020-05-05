@@ -1,0 +1,26 @@
+﻿@page "/"
+@inject Services.MessageService MessageService
+
+
+<div class="card @_statusPanelColor white-text">
+    <div class="card-content">
+        <span class="card-title">@_mainPanelMessage</span>
+    </div>
+    <div class="card-action">
+        <a href="/StatusDetails" class="white-text">View details</a>
+    </div>
+</div>
+<MessageList SystemName="PikaCore"/>
+<MessageList SystemName="PikaPlayer"/>
+
+@code{
+    private string _statusPanelColor = "red";
+    private string _mainPanelMessage = "";
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var (message, status) = await MessageService.GetOverallStatus();
+        _statusPanelColor = status ? "light-green darken-3" : "red darken-3";
+        _mainPanelMessage = message;
+    }
+}

@@ -1,0 +1,28 @@
+﻿@page "/StatusDetails"
+@inject Services.MessageService MessageService
+
+<div class="card-panel @_statusPanelColor white-text">
+    <h5>@_mainPanelMessage</h5>
+    <small>Below you can see details of what exactly is degraded.</small>
+</div>
+
+@foreach (var message in _details)
+{
+    <div class="card-panel indigo white-text">
+        <strong><b>@message</b></strong>
+    </div>
+}
+
+@code{
+    private string _statusPanelColor = "red";
+    private string _mainPanelMessage = "";
+    private Stack<string> _details = new Stack<string>();
+    
+    protected override async Task OnInitializedAsync()
+    {
+        var (messages, status) = await MessageService.GetOverallStatusDetailed();
+        _statusPanelColor = status ? "light-green darken-3" : "red darken-3";
+        _mainPanelMessage = messages.Pop();
+        _details = messages;
+    }
+}
