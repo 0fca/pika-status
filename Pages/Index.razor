@@ -1,26 +1,66 @@
 ﻿@page "/"
 @inject Services.MessageService MessageService
+@using PikaStatus.Components
 
-
-<div class="card @_statusPanelColor white-text">
-    <div class="card-content">
-        <span class="card-title">@_mainPanelMessage</span>
+@if (!isError)
+{
+    if (!string.IsNullOrEmpty(_mainPanelMessage))
+    {
+        <div class="card @_statusPanelColor white-text">
+            <div class="card-content">
+                <span class="card-title">@_mainPanelMessage</span>
+            </div>
+            <div class="card-action">
+                <a href="/StatusDetails" class="white-text">View details</a>
+            </div>
+        </div>
+    }else
+    {
+        <div class="card-panel indigo">
+            <ProgressSpinner/>
+        </div>
+    }
+@if (_isOkLoadingSystems)
+{
+    @foreach (var system in _systems)
+    {
+        <SystemCard SystemName="@system"/>
+    }
+}
+else
+{
+    <div class="card-panel indigo">
+        <ProgressSpinner/>
     </div>
-    <div class="card-action">
-        <a href="/StatusDetails" class="white-text">View details</a>
+}
+}
+else
+{
+    <div class="card-panel red darken-3 white-text">
+        Sorry, but an error ocurred.
     </div>
-</div>
-<MessageList SystemName="PikaCore"/>
-<MessageList SystemName="PikaPlayer"/>
-
+}
 @code{
-    private string _statusPanelColor = "red";
+    private string _statusPanelColor = "indigo";
     private string _mainPanelMessage = "";
+    private IList<string>_systems = new List<string>();
+    private bool _isOkLoadingSystems;
+    public bool isError = false;
     
     protected override async Task OnInitializedAsync()
     {
-        var (message, status) = await MessageService.GetOverallStatus();
-        _statusPanelColor = status ? "light-green darken-3" : "red darken-3";
-        _mainPanelMessage = message;
+        try
+        {
+            var (message, status) = await MessageService.GetOverallStatus();
+            _statusPanelColor = status ? "light-green darken-3" : "red darken-3";
+            _mainPanelMessage = message;
+            var (isOkayLoadingSystems, systemList) = (await MessageService.GetAllSystems());
+            _systems = systemList;
+            _isOkLoadingSystems = isOkayLoadingSystems;
+        }
+        catch
+        {
+            isError = true;
+        }
     }
 }
