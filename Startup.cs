@@ -25,6 +25,9 @@ namespace PikaStatus
             services.AddResponseCaching();
             services.AddResponseCompression();
             services.AddCors();
+            services.AddHsts(o =>
+            {
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -35,7 +38,7 @@ namespace PikaStatus
             }
             else
             {
-                app.UseExceptionHandler("/Error");
+                app.UseExceptionHandler("/error");
                 app.UseHsts();
             }
 
@@ -44,7 +47,6 @@ namespace PikaStatus
             app.UseRouting();
             app.UseResponseCaching();
             app.UseResponseCompression();
-            app.UseWelcomePage("/wwwroot/index.html");
             app.UseCors(options =>
             {
                 options.AllowCredentials();

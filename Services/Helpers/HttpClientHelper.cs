@@ -66,6 +66,35 @@ namespace PikaStatus.Services.Helpers
             }
             return apiMessage;
         }
+        
+        internal static async Task<ApiMessage<List<string>>> GetSystems(string endpoint)
+        {
+            var response = await _client.GetAsync(endpoint);
+            var apiMessage = new ApiMessage<List<string>>();
+            if (response.IsSuccessStatusCode)
+            {
+                apiMessage = JsonConvert
+                    .DeserializeObject<ApiMessage<List<string>>>(
+                        await response.Content.ReadAsStringAsync()                     
+                    );
+            }
+            return apiMessage;
+        }
+        
+        internal static async Task<ApiMessage<string>> GetSystemStateText(string endpoint)
+        {
+            var response = await _client.GetAsync(endpoint);
+            var apiMessage = new ApiMessage<string>();
+            if (response.IsSuccessStatusCode)
+            {
+                var c = await response.Content.ReadAsStringAsync();
+                apiMessage = JsonConvert
+                    .DeserializeObject<ApiMessage<string>>(
+                                           c
+                    );
+            }
+            return apiMessage;
+        }
 
         internal static void Dispose()
         {
