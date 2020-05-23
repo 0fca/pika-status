@@ -44,6 +44,7 @@ namespace PikaStatus
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseFileServer();
             app.UseRouting();
             app.UseResponseCaching();
             app.UseResponseCompression();

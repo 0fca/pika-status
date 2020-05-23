@@ -44,6 +44,18 @@ namespace PikaStatus.Services
                 .GetMessagesAsync(url);
             return new Tuple<bool, List<MessageEntity>>(message.Status, message.Data);
         }
+        
+        public async Task<Tuple<bool, List<IssueEntity>>> GetIssues(string name, int id)
+        {
+            var url = string.Format(_configuration.GetConnectionString($"IssuesEndpoint"), name, id);
+            if (string.IsNullOrEmpty(url))
+            {
+                return new Tuple<bool, List<IssueEntity>>(false, null);
+            }
+            var message = await HttpClientHelper
+                .GetIssuesAsync(url);
+            return new Tuple<bool, List<IssueEntity>>(message.Status, message.Data);
+        }
 
         public async Task<Tuple<bool, string>> GetLatestMessage(string systemName)
         {
