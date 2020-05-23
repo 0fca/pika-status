@@ -15,10 +15,12 @@ namespace PikaStatus.Models
         [Required]
         [NotNull]
         [DisplayName("Date created")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy/MM/dd}")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
         
         [Required]
         [DisplayName("Date last updated")]
+        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy/MM/dd}")]
         public DateTime UpdatedAt { get; set; }
 
         [Required] 

@@ -52,6 +52,20 @@ namespace PikaStatus.Services.Helpers
             }
             return apiMessage;
         }
+        
+        internal static async Task<ApiMessage<List<IssueEntity>>> GetIssuesAsync(string endpoint)
+        {
+            var response = await _client.GetAsync(endpoint);
+            var apiMessage = new ApiMessage<List<IssueEntity>>();
+            if (response.IsSuccessStatusCode)
+            {
+                apiMessage = JsonConvert
+                    .DeserializeObject<ApiMessage<List<IssueEntity>>>(
+                        await response.Content.ReadAsStringAsync()
+                    );
+            }
+            return apiMessage;
+        }
 
         internal static async Task<ApiMessage<MessageEntity>> GetLatestMessage(string endpoint)
         {
