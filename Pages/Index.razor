@@ -4,34 +4,30 @@
 
 @if (!isError)
 {
-    if (!string.IsNullOrEmpty(_mainPanelMessage))
-    {
-        <div class="card @_statusPanelColor white-text">
-            <div class="card-content">
-                <span class="card-title">@_mainPanelMessage</span>
-            </div>
-            <div class="card-action">
-                <a href="/StatusDetails" class="white-text">View details</a>
-            </div>
-        </div>
-    }else
-    {
-        <div class="card-panel indigo">
-            <ProgressSpinner/>
-        </div>
-    }
-@if (_isOkLoadingSystems)
+@if (_isOkLoadingSystems
+    && !string.IsNullOrEmpty(_mainPanelMessage))
 {
-    @foreach (var system in _systems)
-    {
-        <SystemCard SystemName="@system"/>
-    }
+    <div class="container">
+        <div class="collection with-header">
+            <div class="collection-header"><h4 class="@_statusPanelColor">@_mainPanelMessage</h4></div>
+            @foreach (var system in _systems)
+            {
+                <SystemStatusCollectionItem SystemName="@system"/>
+            }
+        </div>
+        
+        <div class="collection with-header">
+            <div class="collection-header"><h4>Messages</h4></div>
+            @foreach (var system in _systems)
+            {
+                <SystemMessageCollectionItem SystemName="@system"/>
+            }
+        </div>
+    </div>
 }
 else
 {
-    <div class="card-panel indigo">
-        <ProgressSpinner/>
-    </div>
+    <ProgressSpinner/>
 }
 }
 else
@@ -52,7 +48,7 @@ else
         try
         {
             var (message, status) = await MessageService.GetOverallStatus();
-            _statusPanelColor = status ? "light-green darken-3" : "red darken-3";
+            _statusPanelColor = status ? "light-green-text text-darken-3" : "red-text text-darken-3";
             _mainPanelMessage = message;
             var (isOkayLoadingSystems, systemList) = (await MessageService.GetAllSystems());
             _systems = systemList;

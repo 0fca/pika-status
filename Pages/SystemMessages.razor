@@ -5,8 +5,8 @@
 
 
 <div class="container-fluid">
-    <div class="card-panel indigo">
-        <h4 class="white-text">Messages for @SystemName</h4>
+    <div class="row">
+        <h4 class="grey-text text-darken-3">Messages for @SystemName</h4>
     </div>
     <div class="row">
         @if (_messageEntities.Count > 0)
@@ -18,7 +18,7 @@
                     var message = _messageEntities[i];
                     var messageType = ValidateMessageType(message.MessageType);
                     var r = @_badgeColorsDic.TryGetValue(messageType, out var badgeColor); 
-                    <div class="card indigo white-text">
+                    <div class="card white grey-text text-darken-3">
                         <span class="badge @badgeColor">@messageType.ToString()</span>
                         <div class="card-content">
                             <span class="card-title">
@@ -40,10 +40,11 @@
                 @for (var i = 1; i < _messageEntities.Count; i += 2)
                 {
                     var message = _messageEntities[i];
+                    var messageType = ValidateMessageType(message.MessageType);
                     var r = @_badgeColorsDic.TryGetValue(message.MessageType, out var badgeColor);
-                    <div class="card indigo">
-                        <span class="badge @badgeColor">@message.MessageType.ToString()</span>
-                        <div class="card-content white-text">
+                    <div class="card white grey-text text-darken-3">
+                        <span class="badge @badgeColor">@messageType.ToString()</span>
+                        <div class="card-content">
                             <span class="card-title">
                                 <b>@message.Message</b>
                             </span>
@@ -87,7 +88,7 @@
         _badgeColorsDic.Add(MessageType.Info, "light-green darken-3 white-text");
         _badgeColorsDic.Add(MessageType.Issue, "red darken-3 white-text");
         _badgeColorsDic.Add(MessageType.None, "indigo lighten-4 white-text");
-        _badgeColorsDic.Add(MessageType.Unknown, "white darken-2 indigo-text");
+        _badgeColorsDic.Add(MessageType.Unknown, "grey darken-3 white-text");
     }
 
     private static MessageType ValidateMessageType(MessageType messageType)
