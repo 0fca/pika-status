@@ -6,7 +6,7 @@
 
 # THANKS
 
-    Dominik Drąg, Klaudia Ciurka, Bartosz Błyszcz, Zdzisław Goik
+    Dominik Drąg, Klaudia Ciurka, Bartosz Błyszcz, Zdzisław Goik, Monika Stępień
 
 # TECHNOLOGY COLOPHON
 
