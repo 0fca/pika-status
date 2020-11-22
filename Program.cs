@@ -24,7 +24,7 @@ namespace PikaStatus
                 .UseStartup<Startup>()
                 .UseSockets()
                 .UseConfiguration(configuration)
-                .UseUrls($"http://localhost:{port}")
+                .UseUrls($"http://*:{port}")
                 .Build();
             host.Run();
         }
