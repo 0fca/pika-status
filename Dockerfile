@@ -11,6 +11,6 @@ FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS runtime
 WORKDIR /app
 COPY --from=build /app/PikaStatus/out ./
 EXPOSE 5001
-ENTRYPOINT ["dotnet", "PikaStatus.dll"]
+ENTRYPOINT ["dotnet", "PikaStatus.dll", "12000"]
 
 
