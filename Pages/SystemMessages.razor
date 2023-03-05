@@ -2,6 +2,8 @@
 @using PikaStatus.Models
 @inject Services.MessageService MessageService
 @using PikaStatus.Components
+@using Pika.Domain.Status.Models
+@using Pika.Domain.Status.Data
 
 
 <div class="container-fluid">
@@ -88,7 +90,6 @@
         _badgeColorsDic.Add(MessageType.Info, "light-green darken-3 white-text");
         _badgeColorsDic.Add(MessageType.Issue, "red darken-3 white-text");
         _badgeColorsDic.Add(MessageType.None, "indigo lighten-4 white-text");
-        _badgeColorsDic.Add(MessageType.Unknown, "grey darken-3 white-text");
     }
 
     private static MessageType ValidateMessageType(MessageType messageType)
@@ -101,7 +102,7 @@
                 return (MessageType)enumVal;
             }
         }
-        return MessageType.Unknown;
+        return MessageType.None;
     }
 
     private static string FormatDate(DateTime dateTime)

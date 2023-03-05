@@ -53,7 +53,8 @@ namespace PikaStatus
                 options.AllowCredentials();
                 options.AllowAnyHeader();
                 options.WithMethods("GET");
-                options.WithOrigins("https://localhost:5001", 
+                options.WithOrigins("https://core.cloud.localhost:5001",
+                    "http://core.cloud.localhost:5000",
                     "https://core.lukas-bownik.net",
                     "https://dev-core.lukas-bownik.net",
                     "https://me.lukas-bownik.net"

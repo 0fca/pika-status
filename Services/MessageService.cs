@@ -4,7 +4,7 @@ using System.Linq;
 using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
-using PikaStatus.Models;
+using Pika.Domain.Status.Data;
 using PikaStatus.Services.Helpers;
 
 namespace PikaStatus.Services
