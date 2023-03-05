@@ -2,6 +2,7 @@
 
 RUN apt install git
 RUN git clone https://github.com/0fca/Pika.Domain
+WORKDIR /app/Pika.Domain
 RUN dotnet restore
 WORKDIR /app/PikaStatus
 RUN ls -lah /app/
