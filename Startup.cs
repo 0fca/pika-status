@@ -39,7 +39,7 @@ namespace PikaStatus
             else
             {
                 app.UseExceptionHandler("/error");
-                app.UseHsts();
+                //app.UseHsts();
             }
 
             app.UseHttpsRedirection();
