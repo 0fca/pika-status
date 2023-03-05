@@ -1,8 +1,8 @@
 ﻿FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
-WORKDIR /app/PikaStatus
 RUN apt install git
 RUN git clone https://github.com/0fca/Pika.Domain
+WORKDIR /app/PikaStatus
 RUN ls -lah /app/PikaStatus
 COPY ./PikaStatus.csproj .
 RUN dotnet restore
