@@ -24,7 +24,7 @@ namespace PikaStatus
                 .UseStartup<Startup>()
                 .UseSockets()
                 .UseConfiguration(configuration)
-                .UseUrls($"http://status.cloud.localhost:{port}", $"https://status.cloud.localhost:{port+1}")
+                .UseUrls($"http://status.cloud.localhost:{port}")
                 .Build();
             host.Run();
         }
