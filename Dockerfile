@@ -2,10 +2,10 @@
 
 RUN apt install git
 RUN git clone https://github.com/0fca/Pika.Domain
-WORKDIR /app/PikaStatus
-RUN ls -lah /app/PikaStatus
-COPY ./PikaStatus.csproj .
 RUN dotnet restore
+WORKDIR /app/PikaStatus
+RUN ls -lah /app/
+COPY ./PikaStatus.csproj .
 COPY . .
 RUN dotnet publish -c Release -o out
 
