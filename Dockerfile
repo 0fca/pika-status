@@ -1,12 +1,13 @@
 ﻿FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 
-RUN apt install git
+COPY *.csproj .
+
+RUN apt update & apt install git
 RUN git clone https://github.com/0fca/Pika.Domain
-WORKDIR /app/Pika.Domain
-RUN dotnet restore
-WORKDIR /app/PikaStatus
+RUN cd Pika.Domain && dotnet restore
+
+WORKDIR /app
 RUN ls -lah /app/
-COPY ./PikaStatus.csproj .
 COPY . .
 RUN dotnet publish -c Release -o out
 
@@ -15,5 +16,3 @@ WORKDIR /app
 COPY --from=build /app/PikaStatus/out ./
 EXPOSE 12000
 ENTRYPOINT ["dotnet", "PikaStatus.dll", "12000"]
-
-
