@@ -24,14 +24,14 @@ namespace PikaStatus
                 .UseStartup<Startup>()
                 .UseSockets()
                 .UseConfiguration(configuration)
-                .UseUrls($"http://*:{port}")
+                .UseUrls($"http://status.cloud.localhost:{port}", $"https://status.cloud.localhost:{port+1}")
                 .Build();
             host.Run();
         }
 
         private static int ReadPortFromStdIn(IReadOnlyList<string> args)
         {
-            var port = 5001;
+            var port = 8001;
             try
             {
                 port = int.Parse(args[0]);
