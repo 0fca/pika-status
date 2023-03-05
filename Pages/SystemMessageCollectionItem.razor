@@ -1,0 +1,49 @@
+﻿@inject Services.MessageService MessageService
+@using PikaStatus.Components
+
+
+@if (_messageTuple != null)
+{
+    <div class="collection-item">
+        <div class="row">
+            <div class="col s6 m11 l11">
+                <strong><h5 class="grey-text text-darken-3 left">@SystemName</h5></strong>
+            </div>
+            <div class="col s6 m1 l1 center-align">
+                <strong><p><a href="/Messages/@SystemName" class="secondary-content grey-text text-darken-3"><i class="material-icons">read_more</i></a></p></strong>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <div class="collection-item">
+        <ProgressSpinner PromptText = "Loading details..."/>
+    </div>
+}
+
+@code{
+    [Parameter]
+    public string SystemName { get; set; }
+    private Tuple<bool,string> _messageTuple;
+    private string _messageCardColor = "";
+    private string _message = "";
+    private string _badgeText = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            _messageTuple = await MessageService.GetLatestMessage(SystemName);
+        }
+        catch 
+        {
+            _messageTuple = new Tuple<bool, string>(false, "No messages available for the system.");
+        }
+        var (status, text) = await MessageService.GetSystemStateText(SystemName);
+        _message = _messageTuple.Item2 ?? "Probably no message is available.";
+        _messageCardColor = text.Equals("Graceful") ? "light-green darken-3" : "red darken-3";
+        _badgeText = text;
+    }
+}
+

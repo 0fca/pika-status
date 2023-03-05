@@ -25,6 +25,9 @@ namespace PikaStatus
             services.AddResponseCaching();
             services.AddResponseCompression();
             services.AddCors();
+            services.AddHsts(o =>
+            {
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -35,22 +38,23 @@ namespace PikaStatus
             }
             else
             {
-                app.UseExceptionHandler("/Error");
+                app.UseExceptionHandler("/error");
                 app.UseHsts();
             }
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+            app.UseFileServer();
             app.UseRouting();
             app.UseResponseCaching();
             app.UseResponseCompression();
-            app.UseWelcomePage("/wwwroot/index.html");
             app.UseCors(options =>
             {
                 options.AllowCredentials();
                 options.AllowAnyHeader();
                 options.WithMethods("GET");
-                options.WithOrigins("https://localhost:5001", 
+                options.WithOrigins("https://core.cloud.localhost:5001",
+                    "http://core.cloud.localhost:5000",
                     "https://core.lukas-bownik.net",
                     "https://dev-core.lukas-bownik.net",
                     "https://me.lukas-bownik.net"

@@ -1,0 +1,24 @@
+﻿@namespace PikaStatus.Components
+<div class="row">
+    <div class="preloader-wrapper small active">
+        <div class="spinner-layer spinner-light-green-only">
+            <div class="circle-clipper left">
+                <div class="circle"></div>
+            </div><div class="gap-patch">
+                <div class="circle"></div>
+            </div><div class="circle-clipper right">
+                <div class="circle"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row grey-text text-darken-3">
+    @PromptText
+</div>
+
+@code{
+
+    [Parameter]
+    public string PromptText { get; set; } = "Loading...";
+    
+}

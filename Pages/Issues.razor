@@ -1,0 +1,75 @@
+﻿@page "/{SystemName}/Messages/{MessageId}/Issues"
+@using PikaStatus.Models
+@inject Services.MessageService MessageService
+@using PikaStatus.Components
+@using Pika.Domain.Status.Data
+
+
+@if (_issues != null)
+{
+    if (_issues.Count > 0)
+    {
+        @foreach (var issue in _issues)
+        {
+            var badgeColor = @issue.IsFixed ? "light-green darken-3 white-text" : "red darken-3 white-text";
+            var badgeText = issue.IsFixed ? "Fixed" : "Not fixed";
+            <div class="card indigo">
+                <span class="badge @badgeColor">@badgeText</span>
+                <div class="card-content white-text">
+                    <span class="card-title white-text">
+                        @issue.IssueDetails
+                    </span>
+                    <div class="row">
+                        @issue.IssuedComponents
+                    </div>
+                    <div class="row">
+                        <div class="col s12 m12 l12">
+                            Message was created at <b>@FormatDate(issue.CreatedAt)</b>
+                        </div>
+                        <div class="col s12 m12 l12">
+                            Message was updated at <b>@FormatDate(issue.UpdatedAt)</b>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <DataNotAvailable />
+    }
+}
+else
+{
+    <div class="card-panel indigo white-text">
+        <ProgressSpinner />
+    </div>
+}
+
+
+@code{
+    [Parameter]
+    public string MessageId { get; set; }
+
+    [Parameter]
+    public string SystemName { get; set; }
+
+    private List<IssueEntity> _issues;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var issues = await MessageService.GetIssues(SystemName, int.Parse(MessageId));
+            _issues = issues.Item2;
+        }
+        catch
+        {
+            _issues = new List<IssueEntity>();
+        }
+    }
+    private static string FormatDate(DateTime dateTime)
+    {
+        return dateTime.ToString("dd.MM.yyyy HH:mm");
+    }
+}

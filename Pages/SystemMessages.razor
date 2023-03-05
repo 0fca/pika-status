@@ -1,31 +1,37 @@
 ﻿@page "/Messages/{SystemName}"
 @using PikaStatus.Models
 @inject Services.MessageService MessageService
+@using PikaStatus.Components
+@using Pika.Domain.Status.Models
+@using Pika.Domain.Status.Data
+
 
 <div class="container-fluid">
-    <div class="card-panel indigo">
-        <h4 class="white-text">Messages for @SystemName</h4>
+    <div class="row">
+        <h4 class="grey-text text-darken-3">Messages for @SystemName</h4>
     </div>
     <div class="row">
-        @if (_messageEntities != null)
+        @if (_messageEntities.Count > 0)
         {
             <div class="col s12 m6 l6">
                 @for (var i = 0; i < _messageEntities.Count; i += 2)
                 {
+                    
                     var message = _messageEntities[i];
-                    var r = @_badgeColorsDic.TryGetValue(message.MessageType, out var badgeColor); 
-                    <div class="card indigo white-text">
-                        <span class="badge @badgeColor white-text">@message.MessageType.ToString()</span>
+                    var messageType = ValidateMessageType(message.MessageType);
+                    var r = @_badgeColorsDic.TryGetValue(messageType, out var badgeColor); 
+                    <div class="card white grey-text text-darken-3">
+                        <span class="badge @badgeColor">@messageType.ToString()</span>
                         <div class="card-content">
                             <span class="card-title">
                                 <b>@message.Message</b>
                             </span>
                             <div class="row">
                                 <div class="col s12 m12 l12">
-                                    Message was created at <b>@message.CreatedAt</b>
+                                    Message was created at <b>@FormatDate(message.CreatedAt)</b>
                                 </div>
                                 <div class="col s12 m12 l12">
-                                    Message was updated at <b>@message.UpdatedAt</b>
+                                    Message was updated at <b>@FormatDate(message.UpdatedAt)</b>
                                 </div>
                             </div>
                         </div>
@@ -36,31 +42,36 @@
                 @for (var i = 1; i < _messageEntities.Count; i += 2)
                 {
                     var message = _messageEntities[i];
+                    var messageType = ValidateMessageType(message.MessageType);
                     var r = @_badgeColorsDic.TryGetValue(message.MessageType, out var badgeColor);
-                    <div class="card indigo white-text">
-                        <span class="badge @badgeColor white-text">@message.MessageType.ToString()</span>
+                    <div class="card white grey-text text-darken-3">
+                        <span class="badge @badgeColor">@messageType.ToString()</span>
                         <div class="card-content">
                             <span class="card-title">
                                 <b>@message.Message</b>
                             </span>
                             <div class="row">
                                 <div class="col s12 m12 l12">
-                                    Message was created at <b>@message.CreatedAt</b>
+                                    Message was created at <b>@FormatDate(message.CreatedAt)</b>
                                 </div>
                                 <div class="col s12 m12 l12">
-                                    Message was updated at <b>@message.UpdatedAt</b>
+                                    Message was updated at <b>@FormatDate(message.UpdatedAt)</b>
                                 </div>
                             </div>
                         </div>
+                        @if (message.MessageType == MessageType.Issue)
+                        {
+                            <div class="card-action">
+                                <a href="/@SystemName/Messages/@message.Id/Issues">View issues</a>
+                            </div>
+                        }
                     </div>
                 }
             </div>
         }
         else
         {
-            <div class="card-panel red darken-3 white-text">
-                Data from this system wasn't available.
-            </div>
+            <DataNotAvailable />
         }
     </div>
 </div>
@@ -71,13 +82,32 @@
     private Tuple<bool,List<MessageEntity>> _messageTuple;
     private Dictionary<MessageType, string> _badgeColorsDic = new Dictionary<MessageType, string>();
     private List<MessageEntity> _messageEntities = new List<MessageEntity>();
-    
+
     protected override async Task OnInitializedAsync()
     {
         _messageTuple = await MessageService.GetMessages(SystemName);
         _messageEntities = _messageTuple.Item2;
-        _badgeColorsDic.Add(MessageType.Info, "light-green darken-3");
-        _badgeColorsDic.Add(MessageType.Issue, "red darken-3");
-        _badgeColorsDic.Add(MessageType.None, "indigo lighten-4");
+        _badgeColorsDic.Add(MessageType.Info, "light-green darken-3 white-text");
+        _badgeColorsDic.Add(MessageType.Issue, "red darken-3 white-text");
+        _badgeColorsDic.Add(MessageType.None, "indigo lighten-4 white-text");
     }
+
+    private static MessageType ValidateMessageType(MessageType messageType)
+    {
+        var enumVals = typeof(MessageType).GetEnumValues();
+        foreach (var enumVal in enumVals)
+        {
+            if (enumVal.Equals(messageType))
+            {
+                return (MessageType)enumVal;
+            }
+        }
+        return MessageType.None;
+    }
+
+    private static string FormatDate(DateTime dateTime)
+    {
+        return dateTime.ToString("dd.MM.yyyy HH:mm");
+    }
+
 }

@@ -1,26 +1,62 @@
 ﻿@page "/"
 @inject Services.MessageService MessageService
+@using PikaStatus.Components
 
-
-<div class="card @_statusPanelColor white-text">
-    <div class="card-content">
-        <span class="card-title">@_mainPanelMessage</span>
+@if (!isError)
+{
+@if (_isOkLoadingSystems
+    && !string.IsNullOrEmpty(_mainPanelMessage))
+{
+    <div class="container">
+        <div class="collection with-header">
+            <div class="collection-header"><h4 class="@_statusPanelColor">@_mainPanelMessage</h4></div>
+            @foreach (var system in _systems)
+            {
+                <SystemStatusCollectionItem SystemName="@system"/>
+            }
+        </div>
+        
+        <div class="collection with-header">
+            <div class="collection-header"><h4>Messages</h4></div>
+            @foreach (var system in _systems)
+            {
+                <SystemMessageCollectionItem SystemName="@system"/>
+            }
+        </div>
     </div>
-    <div class="card-action">
-        <a href="/StatusDetails" class="white-text">View details</a>
+}
+else
+{
+    <ProgressSpinner/>
+}
+}
+else
+{
+    <div class="card-panel red darken-3 white-text">
+        Sorry, but an error ocurred.
     </div>
-</div>
-<MessageList SystemName="PikaCore"/>
-<MessageList SystemName="PikaPlayer"/>
-
+}
 @code{
-    private string _statusPanelColor = "red";
+    private string _statusPanelColor = "indigo";
     private string _mainPanelMessage = "";
+    private IList<string>_systems = new List<string>();
+    private bool _isOkLoadingSystems;
+    public bool isError = false;
     
     protected override async Task OnInitializedAsync()
     {
-        var (message, status) = await MessageService.GetOverallStatus();
-        _statusPanelColor = status ? "light-green darken-3" : "red darken-3";
-        _mainPanelMessage = message;
+        try
+        {
+            var (message, status) = await MessageService.GetOverallStatus();
+            _statusPanelColor = status ? "light-green-text text-darken-3" : "red-text text-darken-3";
+            _mainPanelMessage = message;
+            var (isOkayLoadingSystems, systemList) = (await MessageService.GetAllSystems());
+            _systems = systemList;
+            _isOkLoadingSystems = isOkayLoadingSystems;
+        }
+        catch
+        {
+            isError = true;
+        }
     }
 }

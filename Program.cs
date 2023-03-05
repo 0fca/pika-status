@@ -1,13 +1,7 @@
-using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Serilog;
 
 namespace PikaStatus
@@ -30,14 +24,14 @@ namespace PikaStatus
                 .UseStartup<Startup>()
                 .UseSockets()
                 .UseConfiguration(configuration)
-                .UseUrls($"http://localhost:{port}")
+                .UseUrls($"http://status.cloud.localhost:{port}", $"https://status.cloud.localhost:{port+1}")
                 .Build();
             host.Run();
         }
 
         private static int ReadPortFromStdIn(IReadOnlyList<string> args)
         {
-            var port = 5001;
+            var port = 8001;
             try
             {
                 port = int.Parse(args[0]);
