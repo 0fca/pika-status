@@ -13,6 +13,6 @@ RUN dotnet publish -c Release -o out
 
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
 WORKDIR /app
-COPY --from=build /app/PikaStatus/out ./
+COPY --from=build /app/out ./
 EXPOSE 12000
 ENTRYPOINT ["dotnet", "PikaStatus.dll", "12000"]
