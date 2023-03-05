@@ -23,9 +23,16 @@
                 <SystemMessageCollectionItem SystemName="@system"/>
             }
         </div>
-    </div>
-}
-else
+        </div>
+    }
+    else if(!_isOkLoadingSystems 
+    && !string.IsNullOrEmpty(_mainPanelMessage))
+    {
+            <div class="card-panel red darken-3 white-text">
+                @_mainPanelMessage
+            </div>    
+    }
+    else
 {
     <ProgressSpinner/>
 }
@@ -42,17 +49,23 @@ else
     private IList<string>_systems = new List<string>();
     private bool _isOkLoadingSystems;
     public bool isError = false;
-    
+
     protected override async Task OnInitializedAsync()
     {
         try
         {
             var (message, status) = await MessageService.GetOverallStatus();
             _statusPanelColor = status ? "light-green-text text-darken-3" : "red-text text-darken-3";
+            if (!status)
+            {
+                var (isOkayLoadingSystems, systemList) = (await MessageService.GetAllSystems());
+                _systems = systemList;
+            }
+            else
+            {
+                _isOkLoadingSystems = !status;
+            }
             _mainPanelMessage = message;
-            var (isOkayLoadingSystems, systemList) = (await MessageService.GetAllSystems());
-            _systems = systemList;
-            _isOkLoadingSystems = isOkayLoadingSystems;
         }
         catch
         {

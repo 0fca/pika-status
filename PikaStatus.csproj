@@ -92,5 +92,5 @@
     </ItemGroup>
     <ItemGroup>
       <ProjectReference Include="..\Pika.Domain\Pika.Domain.csproj" />
-    </ItemGroup>
+   </ItemGroup>
 </Project>
