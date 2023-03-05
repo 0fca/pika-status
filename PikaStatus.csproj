@@ -86,6 +86,7 @@
 
     <ItemGroup>
       <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.2" />
+      <PackageReference Include="Newtonsoft.Json" Version="13.0.2" />
       <PackageReference Include="Microsoft.Extensions.Localization" Version="5.0.2" />
       <PackageReference Include="Serilog.AspNetCore" Version="3.3.0-dev-00161" />
     </ItemGroup>
