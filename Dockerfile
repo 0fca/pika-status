@@ -3,7 +3,7 @@
 WORKDIR /app/PikaStatus
 RUN apt install git
 RUN git clone https://github.com/0fca/Pika.Domain
-RUN ls -lah /app
+RUN ls -lah /app/PikaStatus
 COPY ./PikaStatus.csproj .
 RUN dotnet restore
 COPY . .
