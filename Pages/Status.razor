@@ -1,0 +1,80 @@
+﻿@page "/status"
+@inject Services.MessageService MessageService
+@using PikaStatus.Components
+@attribute [Authorize]
+
+@if (!isError)
+{
+    @if (_isOkLoadingSystems
+       && !string.IsNullOrEmpty(_mainPanelMessage))
+    {
+        <div class="container">
+            <div class="collection with-header">
+                <div class="collection-header"><h4 class="@_statusPanelColor">@_mainPanelMessage</h4></div>
+                @foreach (var system in _systems)
+                {
+                    <SystemStatusCollectionItem SystemName="@system" />
+                }
+            </div>
+
+            <div class="collection with-header">
+                <div class="collection-header"><h4>Messages</h4></div>
+                @foreach (var system in _systems)
+                {
+                    <SystemMessageCollectionItem SystemName="@system" />
+                }
+            </div>
+        </div>
+    }
+    else if (!_isOkLoadingSystems
+    && !string.IsNullOrEmpty(_mainPanelMessage))
+    {
+        <div class="container">
+            <div class="card-panel havelock darken-3 white-text">
+                @_mainPanelMessage
+            </div>
+        </div>
+
+    }
+    else
+    {
+        <ProgressSpinner />
+    }
+}
+else
+{
+    <div class="card-panel red darken-3 white-text">
+        Sorry, but an error ocurred.
+    </div>
+}
+@code {
+    private string _statusPanelColor = "havelock";
+    private string _mainPanelMessage = "";
+    private IList<string> _systems = new List<string>();
+    private bool _isOkLoadingSystems;
+    public bool isError = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var (message, status) = await MessageService.GetOverallStatus();
+            _statusPanelColor = status ? "light-green-text text-darken-3" : "red-text text-darken-3";
+            if (status)
+            {
+                var (isOkayLoadingSystems, systemList) = (await MessageService.GetAllSystems());
+                _systems = systemList;
+                _isOkLoadingSystems = isOkayLoadingSystems;
+            }
+            else
+            {
+                _isOkLoadingSystems = !status;
+            }
+            _mainPanelMessage = message;
+        }
+        catch
+        {
+            isError = true;
+        }
+    }
+}

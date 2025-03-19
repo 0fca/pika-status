@@ -1,33 +1,159 @@
 ﻿@page "/"
 @namespace PikaStatus.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @{
     Layout = null;
+    bool isAuthorized = HttpContext.User.Identity!.IsAuthenticated;
+    string coreAddress = Configuration.GetSection("CoreAddress").Value ?? "https://core.lukas-bownik.net";
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8"/>
-    <meta property="og:title" content="Pika Status" />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://infra.lukas-bownik.net/" />
-    <meta property="og:description" content="Welcome to Pika Status! Here you can check out Pika Cloud apps' status." />
-    <meta property="og:image" content="https://core.lukas-bownik.net/images/pika-logos/pikacloud_brand.png" />
-    <meta name="theme-color" content="#558b2f" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>PikaStatus - Monica</title>
-    <base href="~/"/>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
-    <link href="css/site.css" rel="stylesheet"/>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-    <link rel="icon" type="image/ico" href="images/pika-logos/pikacloud_48.png">
-</head>
-<body>
-<app>
-    <component type="typeof(App)" render-mode="ServerPrerendered"/>
-</app>
+<!doctype html>
+<html class="no-js" lang="en">
 
+<head>
+    <meta charset="utf-8">
+    <title>PikaCloud :: Cloudfront</title>
+    <meta property="og:title" content="cloudfront" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://cloud.lukas-bownik.net/" />
+    <meta property="og:description" content="Welcome to Pika Cloud - a simple, personal, object-oriented cloud system" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:description" content="Welcome to Pika Core Identity Area!" />
+    <meta property="og:image" content="https://core.lukas-bownik.net/images/pika-logos/pikacloud_brand.png" />
+    <meta name="theme-color" content="#0A4492" />
+    <link rel="manifest" href="site.webmanifest">
+    <link rel="stylesheet" href="/css/normalize.css">
+    <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/material-icons.css">
+    <link type="text/plain" rel="author" href="humans.txt" />
+    <link rel="stylesheet" href="/css/materialize.min.css">
+    <link rel="icon" type="image/ico" href="~/images/pika-logos/pikacloud_48.png" asp-append-version="true">
+    <script src="/js/vendor/materialize.min.js" defer></script>
+    <script src="/js/vendor/modernizr-3.7.1.min.js" defer></script>
+    <script src="/js/vendor/jquery-3.4.1.min.js" crossorigin="anonymous" defer></script>
+    <script src="/js/plugins.js" defer></script>
+    <script src="/js/site.js" defer></script>
+</head>
+
+<body class="fullscreen">
+    <div class="navbar-fixed">
+        <nav class="z-depth-0">
+            <div class="nav-wrapper whitesmoke">
+                <a class="brand-logo brand brand-margin brand-text" href="/">
+                      <img src="/images/pika-logos/pikacloud_brand.png" class="responsive-img" alt="Pika Cloud" style="height: inherit;"/>
+                </a>
+                <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons" style="color: #607FBA;">menu</i></a>
+                <ul class="right hide-on-med-and-down">
+                    <li>
+                        <a id="app-drop-link" class='dropdown-trigger grey-text text-darken-3' href='#' data-target='app-dropdown' title="PikaCloud Apps">
+                            <i class="large material-icons">apps</i>
+                        </a>
+                    </li>
+                    <li>
+                        @if (isAuthorized) {
+                            <a id="user-drop-link" class='dropdown-trigger navlink havelock-text' href='#' data-target='user-dropdown' title="@HttpContext.User.Identity.Name">
+                                <i class="large material-icons">account_circle</i>
+                            </a>
+                        } else {
+                            <a class="grey-text text-darken-3" href="@coreAddress/Identity/Gateway/Login">
+                                <i class="large material-icons">exit_to_app</i>
+                            </a>
+                        }
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+    <ul id="slide-out" class="sidenav">
+        <li><a href="@coreAddress/Core/Storage/Browse">Pika Core Browser</a></li>
+        <li><a href="https://note.lukas-bownik.net/">Pika Note</a></li>
+        <li><a href="/status">Pika Status</a></li>
+        <li>
+        @if (isAuthorized)
+        {
+            <form method="post" action="@coreAddress/Identity/Gateway/Logout">
+                <button class="btn btn-flat grey-text text-darken-3">Log out</button>
+            </form>
+        }
+        else
+        {
+            <a class="grey-text text-darken-3" href="@coreAddress/Identity/Gateway/Login">Log in</a>
+        }
+        </li>
+    </ul>
+    <div id="app-dropdown" class="card dropdown-content hide-on-small-and-down appdropdown right z-depth-1-half" tabindex="0">
+        <div class="card-content text-left">
+            <span class="card-title grey-text text-darken-4 center">
+                <img src="/images/pika-logos/pikacloud_apps.svg" alt="Pika" />
+            </span>
+            <div class="collection borderless-collection">
+                <a class="collection-item navlink app-menu-item" href="@coreAddress" title="Pika Core">
+                    <span class="material-icons secondary-content grey-text text-darken-3">
+                        search
+                    </span>
+                    Pika Core
+                </a>
+                <a class="collection-item navlink app-menu-item" href="https://note.lukas-bownik.net/" title="Pika Note">
+                    <span class="material-icons secondary-content grey-text text-darken-3">
+                        subject
+                    </span>
+                    Pika Note
+                </a>
+                <a class="collection-item navlink app-menu-item" href="/status" title="Pika Status">
+                    <span class="material-icons secondary-content grey-text text-darken-3">
+                        favorite_border
+                    </span>
+                    Pika Status
+                </a>
+            </div>
+        </div>
+    </div>
+    <app>
+        <component type="typeof(App)" render-mode="ServerPrerendered" />
+    </app>
+      <footer class="page-footer dark">
+        <div class="container">
+            <div class="row">
+                <div class="col s12 m6 l6">
+                    <h6 class="white-text">Informational Stuff</h6>
+                    <ul>
+                        <li><a class="grey-text text-lighten-3" href="https://blog.lukas-bownik.net/posts/pika-cloud-changelog/">Changelog</a></li>
+                        <li><a class="grey-text text-lighten-3" href="@coreAddress/Core/Policy">PikaCloud Policies</a></li>
+                    </ul>
+                </div>
+                 <div class="col s12 m6 l6">
+                    <h6 class="white-text">Cloud Status</h6>
+                    <ul>
+                        <li><a class="grey-text text-lighten-3" href="/status">Status</a></li>
+                        <li><a class="grey-text text-lighten-3" href="https://lukas-bownik.net/">Pika Cloud Console</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-copyright grey darken-4">
+            <div class="container">
+                © <span id="date"></span> Ofca - <small>From creativity comes immersion</small>
+            </div>
+        </div>
+    </footer>
+<div id="user-dropdown" class="card dropdown-content hide-on-small-and-down appdropdown right z-depth-1-half" tabindex="0">
+    <div class="card-content text-left">
+        <span class="card-title grey-text text-darken-4 center">
+            @HttpContext.User.Identity.Name
+        </span>
+        <div class="container center-align">
+            <span>
+                <form action="@coreAddress/Identity/Gateway/Logout">
+                <button class="btn" type="submit">
+                    Log out
+                </button>
+                </form>
+            </span>
+        </div>
+    </div>
+</div>
 <div id="blazor-error-ui">
     <environment include="Staging,Production">
         An error has occurred. This application may no longer respond until reloaded.

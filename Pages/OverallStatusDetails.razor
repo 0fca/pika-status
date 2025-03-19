@@ -3,8 +3,10 @@
 @using PikaStatus.Components
 
 
+<div class="container">
 @if (_details != null)
 {
+
     if (_details.Count > 0)
     {
         <div class="card-panel @_statusPanelColor white-text">
@@ -29,8 +31,9 @@ else
         <ProgressSpinner />
     </div>
 }
+</div>
 @code{
-    private string _statusPanelColor = "indigo";
+    private string _statusPanelColor = "havelock";
     private string _mainPanelMessage = "";
     private Stack<string> _details;
     private bool _overallDetailsRequestStatus = false;
@@ -38,7 +41,7 @@ else
     protected override async Task OnInitializedAsync()
     {
         var (messages, status) = await MessageService.GetOverallStatusDetailed();
-        _statusPanelColor = status ? "light-green darken-3" : "red darken-3";
+        _statusPanelColor = status ? "light-green darken-3" : "havelock darken-3";
         _mainPanelMessage = messages.Pop();
         _details = messages;
         _overallDetailsRequestStatus = status;

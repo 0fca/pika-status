@@ -3,7 +3,7 @@
     "windowsAuthentication": false,
     "anonymousAuthentication": true,
     "iisExpress": {
-      "applicationUrl": "http://localhost:8004",
+      "applicationUrl": "http://status.cloud.localhost:8004",
       "sslPort": 44310
     }
   },
@@ -18,7 +18,7 @@
     "PikaStatus": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://status.cloud.localhost:8002;http://status.cloud.localhost:8001",
+      "applicationUrl": "http://status.cloud.localhost:8001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }

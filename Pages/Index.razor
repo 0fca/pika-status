@@ -1,75 +1,44 @@
 ﻿@page "/"
-@inject Services.MessageService MessageService
-@using PikaStatus.Components
 
-@if (!isError)
-{
-@if (_isOkLoadingSystems
-    && !string.IsNullOrEmpty(_mainPanelMessage))
-{
-    <div class="container">
-        <div class="collection with-header">
-            <div class="collection-header"><h4 class="@_statusPanelColor">@_mainPanelMessage</h4></div>
-            @foreach (var system in _systems)
-            {
-                <SystemStatusCollectionItem SystemName="@system"/>
-            }
-        </div>
-        
-        <div class="collection with-header">
-            <div class="collection-header"><h4>Messages</h4></div>
-            @foreach (var system in _systems)
-            {
-                <SystemMessageCollectionItem SystemName="@system"/>
-            }
-        </div>
-        </div>
-    }
-    else if(!_isOkLoadingSystems 
-    && !string.IsNullOrEmpty(_mainPanelMessage))
-    {
-            <div class="card-panel red darken-3 white-text">
-                @_mainPanelMessage
-            </div>    
-    }
-    else
-{
-    <ProgressSpinner/>
-}
-}
-else
-{
-    <div class="card-panel red darken-3 white-text">
-        Sorry, but an error ocurred.
+<!--[if IE]>
+  <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
+<![endif]-->
+
+<div class="container">
+    <div class="row center">
+        <h1 class="center">Welcome to Pika Cloud!</h1>
     </div>
-}
-@code{
-    private string _statusPanelColor = "indigo";
-    private string _mainPanelMessage = "";
-    private IList<string>_systems = new List<string>();
-    private bool _isOkLoadingSystems;
-    public bool isError = false;
+    <div class="row center">
+        <div class="col s12 m6 l4">
+            <div class="card small havelock white-text">
+                <span class="card-title">Discover...</span>
+                <div class="card-content flow-text">
+                    tech stuff, games, films and some more with Pika Core, just follow the link below
+                </div>
+                <div class="card-action">
+                    <a href="https://core.lukas-bownik.net/Core/Storage/Browse">Pika Core</a>
+                </div>
+            </div>
+        </div>
 
-    protected override async Task OnInitializedAsync()
-    {
-        try
-        {
-            var (message, status) = await MessageService.GetOverallStatus();
-            _statusPanelColor = status ? "light-green-text text-darken-3" : "red-text text-darken-3";
-            if (!status)
-            {
-                var (isOkayLoadingSystems, systemList) = (await MessageService.GetAllSystems());
-                _systems = systemList;
-            }
-            else
-            {
-                _isOkLoadingSystems = !status;
-            }
-            _mainPanelMessage = message;
-        }
-        catch
-        {
-            isError = true;
-        }
-    }
-}
+        <div class="col s12 m6 l4">
+            <div class="card small havelock white-text">
+                <span class="card-title">Write down...</span>
+                <div class="card-content flow-text">
+                    whatever is on your mind with Pika Note - a custom, web-based notepad  
+                </div>
+                <div class="card-action">
+                    <a href="https://note.lukas-bownik.net/">Pika Note</a>
+                </div>
+            </div>
+        </div>
+        <div class="col s12 m6 l4">
+            <div class="card small havelock white-text">
+                <span class="card-title">Reach...</span>
+                <div class="card-content flow-text">
+                    out soon and stay tuned for what's about to come!
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

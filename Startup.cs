@@ -4,7 +4,11 @@ using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using OpenIddict.Client;
+using OpenIddict.Validation.AspNetCore;
+using PikaStatus.Extensions;
 using PikaStatus.Services;
+using System;
 
 namespace PikaStatus
 {
@@ -20,14 +24,48 @@ namespace PikaStatus
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddRazorPages();
-            services.AddServerSideBlazor();
+            services.AddServerSideBlazor(c =>
+            {
+                c.DetailedErrors = true;
+            });
+            services.AddRazorComponents()
+                .AddInteractiveServerComponents();
             services.AddSingleton<MessageService>();
             services.AddResponseCaching();
-            services.AddResponseCompression();
             services.AddCors();
-            services.AddHsts(o =>
+            services.AddCascadingAuthenticationState();
+            services.AddOpenIddict()
+                .AddClient(o =>
+                {
+                    o.DisableTokenStorage();
+                    o.AllowClientCredentialsFlow();
+                    o.AllowRefreshTokenFlow();
+                    o.AddRegistration(new OpenIddictClientRegistration
+                    {
+                        RegistrationId = "pika-core",
+                        ClientId = Configuration.GetSection("Keycloak")["ClientId"],
+                        ClientSecret = Configuration.GetSection("Keycloak")["ClientSecret"],
+                        Issuer = new Uri(Configuration.GetSection("Keycloak")["Authority"], UriKind.Absolute)
+                    });
+                    o.UseSystemNetHttp()
+                        .SetProductInformation(typeof(Program).Assembly);
+                }) 
+                .AddValidation(o =>
+                {
+                    o.SetIssuer(Configuration.GetSection("Keycloak")["Authority"]);
+                    o.UseDataProtection();
+                    o.UseIntrospection()
+                        .SetClientId(Configuration.GetSection("Keycloak")["ClientId"])
+                        .SetClientSecret(
+                            Configuration.GetSection("Keycloak")["ClientSecret"]);
+                    o.UseSystemNetHttp();
+                    o.UseAspNetCore();
+                });
+            services.AddAuthentication(o =>
             {
+                o.DefaultScheme = OpenIddictValidationAspNetCoreDefaults.AuthenticationScheme;
             });
+            services.AddAuthorizationCore();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -47,7 +85,12 @@ namespace PikaStatus
             app.UseFileServer();
             app.UseRouting();
             app.UseResponseCaching();
-            app.UseResponseCompression();
+            app.UseOiddictAuthenticationCookieSupport();
+            app.UseMapJwtClaimsToIdentity();
+            app.UseEnsureJwtBearerValid();
+            app.UseAuthentication();
+            app.UseAuthorization();
+
             app.UseCors(options =>
             {
                 options.AllowCredentials();

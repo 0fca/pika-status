@@ -1,12 +1,22 @@
 ﻿<Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
-        <RouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)"/>
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+        </AuthorizeRouteView>
     </Found>
     <NotFound>
         <LayoutView Layout="@typeof(MainLayout)">
-            <div class="card-panel red darken-3 white-text">
-                <h5>You seem to got lost...</h5>
-            </div>
+            <div class="container">
+                <div class="card red darken-3 white-text center">
+                    <h5 class="card-title">There is nothing here!</h5>
+                    <div class="card-content">
+                        It appears you got lost. Follow the links below to get back on track.
+                    </div>
+                    <div class="card-action">
+                        <a href="/" class="white-text">Cloud front</a>
+                        <a href="https://core.lukas-bownik.net/" class="white-text">Pika Core</a>
+                    </div>
+                </div>
+            </div> 
         </LayoutView>
     </NotFound>
 </Router>
