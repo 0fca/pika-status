@@ -2,10 +2,7 @@
 
 COPY *.csproj .
 
-RUN cd Pika.Domain && dotnet restore
-
 WORKDIR /app
-RUN ls -lah /app/
 COPY . .
 RUN dotnet publish -c Release -o out
 
