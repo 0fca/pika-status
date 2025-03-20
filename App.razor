@@ -1,6 +1,20 @@
 ﻿<Router AppAssembly="@typeof(Program).Assembly">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)">
+            <NotAuthorized>
+                <div class="container">
+                    <div class="card red darken-3 white-text center">
+                        <h5 class="card-title">This view is off limits</h5>
+                        <div class="card-content">
+                            You need to log in through the cloud's SSO to view this page's content    
+                        </div>
+                        <div class="card-action">
+                            <a href="/" class="white-text">Cloud front</a>
+                            <a href="https://core.lukas-bownik.net/Identity/Gateway/Login" class="white-text">Pika Core SSO</a>
+                        </div>
+                    </div>
+                </div>
+            </NotAuthorized>
         </AuthorizeRouteView>
     </Found>
     <NotFound>
@@ -16,7 +30,7 @@
                         <a href="https://core.lukas-bownik.net/" class="white-text">Pika Core</a>
                     </div>
                 </div>
-            </div> 
+            </div>
         </LayoutView>
     </NotFound>
 </Router>
