@@ -8,8 +8,8 @@
        && !string.IsNullOrEmpty(_mainPanelMessage))
     {
         <div class="container">
-            <div class=row">
-                <div class="col s12 m6 l6>
+            <div class="row">
+                <div class="col s12 m6 l6">
                     <div class="collection with-header">
                         <div class="collection-header"><h4 class="@_statusPanelColor">@_mainPanelMessage</h4></div>
                             @foreach (var system in _systems)
@@ -17,17 +17,16 @@
                                 <SystemStatusCollectionItem SystemName="@system" />
                             }
                         </div>
-                    </div>
                 </div>
-                <div class="col s12 m6 l6>
+                <div class="col s12 m6 l6">
                     <div class="collection with-header">
                         <div class="collection-header"><h4>Messages</h4></div>
                             @foreach (var system in _systems)
                             {
                                 <SystemMessageCollectionItem SystemName="@system" />
                             }
+                    
                         </div>
-                    </div>
                 </div>
             </div>
         </div>
