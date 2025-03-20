@@ -28,8 +28,7 @@ namespace PikaStatus
             {
                 c.DetailedErrors = true;
             });
-            services.AddRazorComponents()
-                .AddInteractiveServerComponents();
+            services.AddHealthChecks();
             services.AddSingleton<MessageService>();
             services.AddResponseCaching();
             services.AddCors();
@@ -82,7 +81,6 @@ namespace PikaStatus
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseFileServer();
             app.UseRouting();
             app.UseResponseCaching();
             app.UseOiddictAuthenticationCookieSupport();
@@ -90,6 +88,7 @@ namespace PikaStatus
             app.UseEnsureJwtBearerValid();
             app.UseAuthentication();
             app.UseAuthorization();
+            app.UseHealthChecks("/Health");
 
             app.UseCors(options =>
             {
