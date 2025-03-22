@@ -265,7 +265,7 @@ body {
 
 
 a, .btn-link {
-    color: #0366d6;
+    color: #ff6f00 !important;
 }
 
 .btn-primary {
@@ -382,4 +382,8 @@ app {
 
 .fullscreen-container {
     width: 100%;
+}
+
+.progress .indeterminate {
+    background-color: #0A4492 !important;
 }

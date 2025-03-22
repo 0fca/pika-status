@@ -11,7 +11,12 @@
             <div class="row">
                 <div class="col s12 m6 l6">
                     <div class="collection with-header">
-                        <div class="collection-header"><h4 class="@_statusPanelColor">@_mainPanelMessage</h4></div>
+                        <div class="collection-header">
+                            <h5>
+                                <span class="@_statusBadgeColor">@_statusBadgeText</span>
+                                @_mainPanelMessage
+                            </h5>
+                        </div>
                             @foreach (var system in _systems)
                             {
                                 <SystemStatusCollectionItem SystemName="@system" />
@@ -20,7 +25,7 @@
                 </div>
                 <div class="col s12 m6 l6">
                     <div class="collection with-header">
-                        <div class="collection-header"><h4>Messages</h4></div>
+                        <div class="collection-header"><h5>Messages</h5></div>
                             @foreach (var system in _systems)
                             {
                                 <SystemMessageCollectionItem SystemName="@system" />
@@ -53,8 +58,9 @@ else
     </div>
 }
 @code {
-    private string _statusPanelColor = "havelock";
+    private string _statusBadgeColor = "";
     private string _mainPanelMessage = "";
+    private string _statusBadgeText = "";
     private IList<string> _systems = new List<string>();
     private bool _isOkLoadingSystems;
     public bool isError = false;
@@ -64,7 +70,8 @@ else
         try
         {
             var (message, status) = await MessageService.GetOverallStatus();
-            _statusPanelColor = status ? "light-green-text text-darken-3" : "red-text text-darken-3";
+            _statusBadgeColor = status ? "badge green white-text" : "badge red white-text";
+            _statusBadgeText = status ? "OK" : "Fail";
             if (status)
             {
                 var (isOkayLoadingSystems, systemList) = (await MessageService.GetAllSystems());
