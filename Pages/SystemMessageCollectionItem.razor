@@ -1,5 +1,6 @@
 ﻿@inject Services.MessageService MessageService
 @using PikaStatus.Components
+@using System.Threading
 
 
 @if (_messageTuple != null)
@@ -40,6 +41,7 @@ else
         {
             _messageTuple = new Tuple<bool, string>(false, "No messages available for the system.");
         }
+
         var (status, text) = await MessageService.GetSystemStateText(SystemName);
         _message = _messageTuple.Item2 ?? "Probably no message is available.";
         _messageCardColor = text.Equals("Graceful") ? "light-green darken-3" : "red darken-3";

@@ -11,7 +11,7 @@
         <h4 class="grey-text text-darken-3">Messages for @SystemName</h4>
     </div>
     <div class="row">
-        @if (_messageEntities.Count > 0)
+        @if (_messageEntities != null && _messageEntities.Count > 0)
         {
             <div class="col s12 m6 l6">
                 @for (var i = 0; i < _messageEntities.Count; i += 2)
@@ -81,12 +81,12 @@
     public string SystemName { get; set; }
     private Tuple<bool,List<MessageEntity>> _messageTuple;
     private Dictionary<MessageType, string> _badgeColorsDic = new Dictionary<MessageType, string>();
-    private List<MessageEntity> _messageEntities = new List<MessageEntity>();
+    private List<MessageEntity>? _messageEntities = null;
 
     protected override async Task OnInitializedAsync()
     {
         _messageTuple = await MessageService.GetMessages(SystemName);
-        _messageEntities = _messageTuple.Item2;
+        _messageEntities ??= _messageTuple.Item2;
         _badgeColorsDic.Add(MessageType.Info, "light-green darken-3 white-text");
         _badgeColorsDic.Add(MessageType.Issue, "red darken-3 white-text");
         _badgeColorsDic.Add(MessageType.None, "indigo lighten-4 white-text");

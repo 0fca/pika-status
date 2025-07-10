@@ -38,7 +38,7 @@ namespace PikaStatus.Services
             var url = string.Format(_configuration.GetConnectionString($"MessagesEndpoint"), systemName);
             if (string.IsNullOrEmpty(url))
             {
-                return new Tuple<bool, List<MessageEntity>>(false, null);
+                return new Tuple<bool, List<MessageEntity>>(false, []);
             }
             var message = await HttpClientHelper
                 .GetMessagesAsync(url);
@@ -74,7 +74,7 @@ namespace PikaStatus.Services
             var baseUrl =_configuration.GetConnectionString($"SystemsEndpoint");
             if (string.IsNullOrEmpty(baseUrl))
             {
-                return new Tuple<bool, IList<string>>(false, new List<string>());
+                return new Tuple<bool, IList<string>>(false, []);
             }
             var apiMessage = await HttpClientHelper.GetSystems(baseUrl);
             return new Tuple<bool, IList<string>>(apiMessage.Status, apiMessage.Data);
@@ -88,7 +88,8 @@ namespace PikaStatus.Services
                 return new Tuple<bool, string>(false, "Unknown");
             }
             var apiMessage = await HttpClientHelper.GetSystemStateText(baseUrl);
-            return new Tuple<bool, string>(apiMessage.Status, apiMessage.Data);
+
+            return new Tuple<bool, string>(apiMessage.Status, apiMessage.Data ?? "Warning");
         }
     }
 }

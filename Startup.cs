@@ -1,3 +1,4 @@
+using Blazored.SessionStorage;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http.Connections;
@@ -28,11 +29,15 @@ namespace PikaStatus
             {
                 c.DetailedErrors = true;
             });
+
+            services.AddBlazoredSessionStorage();
             services.AddHealthChecks();
             services.AddSingleton<MessageService>();
             services.AddResponseCaching();
             services.AddCors();
             services.AddCascadingAuthenticationState();
+            services.AddDataProtection();
+
             services.AddOpenIddict()
                 .AddClient(o =>
                 {
@@ -78,7 +83,7 @@ namespace PikaStatus
                 app.UseExceptionHandler("/error");
                 app.UseHsts();
             }
-
+            
             app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();

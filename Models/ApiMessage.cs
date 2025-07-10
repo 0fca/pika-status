@@ -5,7 +5,7 @@ namespace PikaStatus.Models
     public class ApiMessage<T> : IPayload<T>
     {
         public T Data { get; set; }
-        public Stack<string> Messages { get; set; } = new Stack<string>(new List<string>() { "There was a problem reading status from Pika Core system" });
+        public Stack<string> Messages { get; set; } = new Stack<string>(["There was a problem reading status from system mainframe API"]);
         public bool Status { get; set; } = true;
 
         public void AddMessage(string message)

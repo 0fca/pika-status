@@ -1,11 +1,12 @@
 ﻿@page "/status"
 @inject Services.MessageService MessageService
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorageService
 @using PikaStatus.Components
 
 @if (!isError)
 {
     @if (_isOkLoadingSystems
-       && !string.IsNullOrEmpty(_mainPanelMessage))
+    && !string.IsNullOrEmpty(_mainPanelMessage))
     {
         <div class="container">
             <div class="row">
@@ -17,21 +18,23 @@
                                 @_mainPanelMessage
                             </h5>
                         </div>
-                            @foreach (var system in _systems)
-                            {
-                                <SystemStatusCollectionItem SystemName="@system" />
-                            }
-                        </div>
+                        @foreach (var system in _systems)
+                        {
+                            <SystemStatusCollectionItem SystemName="@system" />
+                        }
+                    </div>
                 </div>
                 <div class="col s12 m6 l6">
                     <div class="collection with-header">
-                        <div class="collection-header"><h5>Messages</h5></div>
-                            @foreach (var system in _systems)
-                            {
-                                <SystemMessageCollectionItem SystemName="@system" />
-                            }
-                    
+                        <div class="collection-header">
+                            <h5>Messages</h5>
                         </div>
+                        @foreach (var system in _systems)
+                        {
+                            <SystemMessageCollectionItem SystemName="@system" />
+                        }
+
+                    </div>
                 </div>
             </div>
         </div>
@@ -62,7 +65,7 @@ else
     private string _mainPanelMessage = "";
     private string _statusBadgeText = "";
     private IList<string> _systems = new List<string>();
-    private bool _isOkLoadingSystems;
+    private bool _isOkLoadingSystems = false;
     public bool isError = false;
 
     protected override async Task OnInitializedAsync()
@@ -72,17 +75,39 @@ else
             var (message, status) = await MessageService.GetOverallStatus();
             _statusBadgeColor = status ? "badge green white-text" : "badge red white-text";
             _statusBadgeText = status ? "OK" : "Fail";
-            if (status)
+            var result = await sessionStorageService.ContainKeyAsync("SystemList");
+            var ttlSet = await sessionStorageService.ContainKeyAsync("TTL");
+            var ttl = await sessionStorageService.GetItemAsync<DateTime>("TTL");
+            if(!ttlSet)
             {
-                var (isOkayLoadingSystems, systemList) = (await MessageService.GetAllSystems());
-                _systems = systemList;
-                _isOkLoadingSystems = isOkayLoadingSystems;
+                await sessionStorageService.SetItemAsync("TTL", DateTime.UtcNow.AddMinutes(2));
+            }
+            if (result && ttl > DateTime.UtcNow)
+            {
+                _systems = await sessionStorageService.GetItemAsync<IList<string>>("SystemList");
+                _isOkLoadingSystems = true;
+                _mainPanelMessage = message;
             }
             else
             {
-                _isOkLoadingSystems = !status;
+                if (status)
+                {
+                    var (isOkayLoadingSystems, systemList) = (await MessageService.GetAllSystems());
+                    if (systemList != null)
+                    {
+                        _systems = systemList;
+                    }
+                    _isOkLoadingSystems = isOkayLoadingSystems;
+                    _mainPanelMessage = message;
+                    await sessionStorageService.SetItemAsync("SystemList", _systems);
+                    await sessionStorageService.SetItemAsync("TTL", DateTime.UtcNow.AddMinutes(2));
+                }
+                else
+                {
+                    _isOkLoadingSystems = !status;
+                }
             }
-            _mainPanelMessage = message;
+
         }
         catch
         {

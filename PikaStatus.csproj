@@ -89,6 +89,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <PackageReference Include="Blazored.SessionStorage" Version="2.4.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.1">
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
