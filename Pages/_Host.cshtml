@@ -24,49 +24,93 @@
     <meta name="theme-color" content="#ff6f00">
     <link rel="stylesheet" href="/css/normalize.css">
     <link rel="stylesheet" href="/css/main.css">
+    <link rel="stylesheet" href="/css/base.css">
     <link rel="stylesheet" href="/css/material-icons.css">
     <link type="text/plain" rel="author" href="humans.txt" />
-    <link rel="stylesheet" href="/css/materialize.min.css">
     <link rel="icon" type="image/ico" href="~/images/pika-logos/pikacloud_48.png" asp-append-version="true">
-    <script src="/js/vendor/materialize.min.js" defer></script>
     <script src="/js/vendor/modernizr-3.7.1.min.js" defer></script>
     <script src="/js/vendor/jquery-3.4.1.min.js" crossorigin="anonymous" defer></script>
     <script src="/js/plugins.js" defer></script>
     <script src="/js/site.js" defer></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=chat,storage,summarize,vital_signs" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=chat,cloud,storage,summarize,vital_signs" />
 </head>
 
 <body class="fullscreen">
     <div class="navbar-fixed">
         <nav class="z-depth-0">
             <div class="nav-wrapper whitesmoke">
+                <a href="#!" data-target="slide-out" class="sidenav-trigger hide-on-large-only">
+                    <i class="material-icons">menu</i>
+                </a>
                 <a class="brand-logo brand brand-margin brand-text" href="/">
                       <img src="/images/pika-logos/pikacloud_brand.png" class="responsive-img" alt="Pika Cloud" style="height: inherit;"/>
                 </a>
-                <a href="#" data-target="slide-out" class="sidenav-trigger"><i class="material-icons" style="color: #607FBA;">menu</i></a>
                 <ul class="right hide-on-med-and-down">
                     <li>
-                        <a id="app-drop-link" class='dropdown-trigger grey-text text-darken-3' href='#' data-target='app-dropdown' title="PikaCloud Apps">
+                        <a id="app-drop-link" class='dropdown-trigger grey-text text-darken-3' href='#!' data-target='app-dropdown' title="PikaCloud Apps">
                             <i class="large material-icons">apps</i>
                         </a>
                     </li>
                     <li>
                         @if (isAuthorized) {
-                            <a id="user-drop-link" class='dropdown-trigger navlink havelock-text' href='#' data-target='user-dropdown' title="@HttpContext.User.Identity.Name">
-                                <i class="large material-icons">account_circle</i>
-                            </a>
+                            <form method="post" action="@coreAddress/Identity/Gateway/Logout" style="display: inline;">
+                                <button class="btn-flat btn-nav navlink white-text" style="height: inherit; border: none; background: transparent;">
+                                    <i class="large material-icons rotate" style="position:relative; height:inherit;">
+                                        exit_to_app
+                                    </i>
+                                </button>
+                            </form>
                         } else {
-                            <a class="grey-text text-darken-3" href="@coreAddress/Identity/Gateway/Login">
+                            <a class="grey-text text-darken-3" href="@coreAddress/login">
                                 <i class="large material-icons">exit_to_app</i>
                             </a>
                         }
                     </li>
                 </ul>
+                <div id="app-dropdown" class="card dropdown-content hide-on-small-and-down appdropdown right z-depth-1-half" tabindex="0">
+                    <div class="card-content text-left">
+                        <span class="card-title grey-text text-darken-4 center">
+                            <img src="/images/pika-logos/pikacloud_apps.svg" alt="Pika Apps" />
+                        </span>
+                        <div class="collection borderless-collection">
+                            <a class="collection-item navlink app-menu-item" href="https://cloud.lukas-bownik.net/" title="Cloudfront">
+                                <span class="material-symbols-outlined secondary-content navlink havelock-text">
+                                    cloud
+                                </span>
+                                Cloudfront
+                            </a>
+                            <a class="collection-item navlink app-menu-item" href="https://core.lukas-bownik.net/" title="Pika Core">
+                                <span class="material-symbols-outlined secondary-content navlink havelock-text">
+                                    storage
+                                </span>
+                                Pika Core
+                            </a>
+                            <a class="collection-item navlink app-menu-item" href="https://chat.lukas-bownik.net/" title="Pika Chat">
+                                <span class="material-symbols-outlined secondary-content navlink havelock-text">
+                                    chat
+                                </span>
+                                Pika Chat
+                            </a>
+                            <a class="collection-item navlink app-menu-item" href="https://note.lukas-bownik.net/" title="Pika Note">
+                                <span class="material-symbols-outlined secondary-content navlink havelock-text">
+                                    summarize
+                                </span>
+                                Pika Note
+                            </a>
+                            <a class="collection-item navlink app-menu-item" href="https://cloud.lukas-bownik.net/status" title="Pika Status">
+                                <span class="material-symbols-outlined secondary-content navlink havelock-text">
+                                    vital_signs
+                                </span>
+                                Pika Status
+                            </a>
+                        </div>
+                    </div>
+                </div>
             </div>
         </nav>
     </div>
     <ul id="slide-out" class="sidenav">
-        <li><a href="@coreAddress/Core/Storage/Browse">Pika Core Browser</a></li>
+        <li><a href="@coreAddress/">Pika Core Browser</a></li>
         <li><a href="https://chat.lukas-bownik.net/">Pika Chat</a></li>
         <li><a href="https://note.lukas-bownik.net/">Pika Note</a></li>
         <li><a href="/status">Pika Status</a></li>
@@ -79,43 +123,13 @@
         }
         else
         {
-            <a class="grey-text text-darken-3" href="@coreAddress/Identity/Gateway/Login">Log in</a>
+            <a class="grey-text text-darken-3" href="@coreAddress/login">Log in</a>
         }
         </li>
     </ul>
-    <div id="app-dropdown" class="card dropdown-content hide-on-small-and-down appdropdown right z-depth-1-half" tabindex="0">
-        <div class="card-content text-left">
-            <span class="card-title grey-text text-darken-4 center">
-                <img src="/images/pika-logos/pikacloud_apps.svg" alt="Pika" />
-            </span>
-            <div class="collection borderless-collection">
-                <a class="collection-item navlink app-menu-item" href="https://core.lukas-bownik.net/" title="Pika Core">
-                    <span class="material-symbols-outlined secondary-content navlink havelock-text">
-                        storage
-                    </span>
-                    Pika Core
-                </a>
-                <a class="collection-item navlink app-menu-item" href="https://chat.lukas-bownik.net/" title="Pika Chat">
-                    <span class="material-symbols-outlined secondary-content navlink havelock-text">
-                        chat
-                    </span>
-                    Pika Chat
-                </a>
-                <a class="collection-item navlink app-menu-item" href="https://note.lukas-bownik.net/" title="Pika Note">
-                    <span class="material-symbols-outlined secondary-content navlink havelock-text">
-                        summarize
-                    </span>
-                    Pika Note
-                </a>
-                <a class="collection-item navlink app-menu-item" href="https://core.lukas-bownik.net/status" title="Pika Status">
-                    <span class="material-symbols-outlined secondary-content navlink havelock-text">
-                        vital_signs
-                    </span>
-                    Pika Status
-                </a>
-            </div>
-        </div>
-    </div>
+    
+    <div class="sidenav-overlay"></div>
+    
     <app>
         <component type="typeof(App)" render-mode="ServerPrerendered" />
     </app>
@@ -125,15 +139,14 @@
                 <div class="col s12 m6 l6">
                     <h6 class="white-text">Informational Stuff</h6>
                     <ul>
-                        <li><a class="grey-text text-lighten-3" href="https://blog.lukas-bownik.net/posts/pika-cloud-changelog/">Changelog</a></li>
-                        <li><a class="grey-text text-lighten-3" href="@coreAddress/Core/Policy">PikaCloud Policies</a></li>
+                        <li><a class="grey-text text-lighten-3" href="https://lukas-bownik.net/posts/pika-cloud-changelog/">Changelog</a></li>
+                        <li><a class="grey-text text-lighten-3" href="@coreAddress/policy">PikaCloud Policies</a></li>
                     </ul>
                 </div>
                  <div class="col s12 m6 l6">
                     <h6 class="white-text">Cloud Status</h6>
                     <ul>
                         <li><a class="grey-text text-lighten-3" href="/status">Status</a></li>
-                        <li><a class="grey-text text-lighten-3" href="https://lukas-bownik.net/">Pika Cloud Console</a></li>
                     </ul>
                 </div>
             </div>
@@ -145,22 +158,7 @@
             </div>
         </div>
     </footer>
-<div id="user-dropdown" class="card dropdown-content hide-on-small-and-down appdropdown right z-depth-1-half" tabindex="0">
-    <div class="card-content text-left">
-        <span class="card-title grey-text text-darken-4 center">
-            @HttpContext.User.Identity.Name
-        </span>
-        <div class="container center-align">
-            <span>
-                <form action="@coreAddress/Identity/Gateway/Logout">
-                <button class="btn" type="submit">
-                    Log out
-                </button>
-                </form>
-            </span>
-        </div>
-    </div>
-</div>
+    
 <div id="blazor-error-ui">
     <environment include="Staging,Production">
         An error has occurred. This application may no longer respond until reloaded.
