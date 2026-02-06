@@ -6,6 +6,7 @@
     Layout = null;
     bool isAuthorized = HttpContext.User.Identity!.IsAuthenticated;
     string coreAddress = Configuration.GetSection("CoreAddress").Value ?? "https://core.lukas-bownik.net";
+    string apiCoreAddress = Configuration.GetSection("ApiCoreAddress").Value ?? "https://api-core.lukas-bownik.net";
 }
 
 <!doctype html>
@@ -25,6 +26,7 @@
     <link rel="stylesheet" href="/css/normalize.css">
     <link rel="stylesheet" href="/css/main.css">
     <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/status-badge.css">
     <link rel="stylesheet" href="/css/material-icons.css">
     <link type="text/plain" rel="author" href="humans.txt" />
     <link rel="icon" type="image/ico" href="~/images/pika-logos/pikacloud_48.png" asp-append-version="true">
@@ -32,80 +34,94 @@
     <script src="/js/vendor/jquery-3.4.1.min.js" crossorigin="anonymous" defer></script>
     <script src="/js/plugins.js" defer></script>
     <script src="/js/site.js" defer></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0&icon_names=chat,cloud,storage,summarize,vital_signs" />
 </head>
 
 <body class="fullscreen">
     <div class="navbar-fixed">
         <nav class="z-depth-0">
-            <div class="nav-wrapper whitesmoke">
+            <div class="nav-wrapper white">
                 <a href="#!" data-target="slide-out" class="sidenav-trigger hide-on-large-only">
                     <i class="material-icons">menu</i>
                 </a>
                 <a class="brand-logo brand brand-margin brand-text" href="/">
                       <img src="/images/pika-logos/pikacloud_brand.png" class="responsive-img" alt="Pika Cloud" style="height: inherit;"/>
                 </a>
-                <ul class="right hide-on-med-and-down">
-                    <li>
-                        <a id="app-drop-link" class='dropdown-trigger grey-text text-darken-3' href='#!' data-target='app-dropdown' title="PikaCloud Apps">
-                            <i class="large material-icons">apps</i>
-                        </a>
+                <ul class="right hide-on-med-and-down nav-actions">
+                    <li class="app-menu-container">
+                        <button id="app-menu-trigger" class="menu-btn" title="PikaCloud Apps">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
+                        </button>
+                        <div id="app-menu-dropdown" class="app-menu-dropdown">
+                                <div class="app-menu-header">
+                                    <img src="/images/pika-logos/pikacloud_apps.svg" alt="Pika Apps" />
+                                </div>
+                                <div class="app-menu-items">
+                                    <a class="app-menu-item" href="https://cloud.lukas-bownik.net/" title="Cloudfront">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+                                        </svg>
+                                        <span>Cloudfront</span>
+                                    </a>
+                                    <a class="app-menu-item" href="@coreAddress" title="Pika Core">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                                        </svg>
+                                        <span>Pika Core</span>
+                                    </a>
+                                    <a class="app-menu-item" href="https://chat.lukas-bownik.net/" title="Pika Chat">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                                        </svg>
+                                        <span>Pika Chat</span>
+                                    </a>
+                                    <a class="app-menu-item" href="https://note.lukas-bownik.net/" title="Pika Note">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                            <polyline points="14 2 14 8 20 8"></polyline>
+                                            <line x1="16" y1="13" x2="8" y2="13"></line>
+                                            <line x1="16" y1="17" x2="8" y2="17"></line>
+                                            <polyline points="10 9 9 9 8 9"></polyline>
+                                        </svg>
+                                        <span>Pika Note</span>
+                                    </a>
+                                    <a class="app-menu-item" href="https://cloud.lukas-bownik.net/status" title="Pika Status">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                                        </svg>
+                                        <span>Pika Status</span>
+                                    </a>
+                                </div>
+                            </div>
                     </li>
                     <li>
                         @if (isAuthorized) {
-                            <form method="post" action="@coreAddress/Identity/Gateway/Logout" style="display: inline;">
-                                <button class="btn-flat btn-nav navlink white-text" style="height: inherit; border: none; background: transparent;">
-                                    <i class="large material-icons rotate" style="position:relative; height:inherit;">
-                                        exit_to_app
-                                    </i>
+                            <form method="post" action="@apiCoreAddress/Identity/Gateway/Logout">
+                                <button class="menu-btn" title="Log out">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                                        <polyline points="16 17 21 12 16 7"></polyline>
+                                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                                    </svg>
                                 </button>
                             </form>
                         } else {
-                            <a class="grey-text text-darken-3" href="@coreAddress/login">
-                                <i class="large material-icons">exit_to_app</i>
+                            <a class="menu-btn" href="@coreAddress/login" title="Log in">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+                                    <polyline points="10 17 15 12 10 7"></polyline>
+                                    <line x1="15" y1="12" x2="3" y2="12"></line>
+                                </svg>
                             </a>
                         }
                     </li>
                 </ul>
-                <div id="app-dropdown" class="card dropdown-content hide-on-small-and-down appdropdown right z-depth-1-half" tabindex="0">
-                    <div class="card-content text-left">
-                        <span class="card-title grey-text text-darken-4 center">
-                            <img src="/images/pika-logos/pikacloud_apps.svg" alt="Pika Apps" />
-                        </span>
-                        <div class="collection borderless-collection">
-                            <a class="collection-item navlink app-menu-item" href="https://cloud.lukas-bownik.net/" title="Cloudfront">
-                                <span class="material-symbols-outlined secondary-content navlink havelock-text">
-                                    cloud
-                                </span>
-                                Cloudfront
-                            </a>
-                            <a class="collection-item navlink app-menu-item" href="https://core.lukas-bownik.net/" title="Pika Core">
-                                <span class="material-symbols-outlined secondary-content navlink havelock-text">
-                                    storage
-                                </span>
-                                Pika Core
-                            </a>
-                            <a class="collection-item navlink app-menu-item" href="https://chat.lukas-bownik.net/" title="Pika Chat">
-                                <span class="material-symbols-outlined secondary-content navlink havelock-text">
-                                    chat
-                                </span>
-                                Pika Chat
-                            </a>
-                            <a class="collection-item navlink app-menu-item" href="https://note.lukas-bownik.net/" title="Pika Note">
-                                <span class="material-symbols-outlined secondary-content navlink havelock-text">
-                                    summarize
-                                </span>
-                                Pika Note
-                            </a>
-                            <a class="collection-item navlink app-menu-item" href="https://cloud.lukas-bownik.net/status" title="Pika Status">
-                                <span class="material-symbols-outlined secondary-content navlink havelock-text">
-                                    vital_signs
-                                </span>
-                                Pika Status
-                            </a>
-                        </div>
-                    </div>
-                </div>
             </div>
         </nav>
     </div>
@@ -154,7 +170,7 @@
 
         <div class="footer-copyright grey darken-4">
             <div class="container">
-                © <span id="date"></span> Ofca - <small>From creativity comes immersion</small>
+                © <span id="date"></span> Ofca - <small>The cloud storage - private and secure by design</small>
             </div>
         </div>
     </footer>

@@ -22,6 +22,7 @@
   --color-accent: #FF8C00;
   --color-accent-soft: #ffb347;
   --color-accent-mute: #fff4e6;
+  --accent: #FF8C00;
   
   /* Semantic colors */
   --color-success: #26b050;
@@ -123,6 +124,7 @@
     --color-accent: #ffb347;
     --color-accent-soft: #ffc875;
     --color-accent-mute: #332414;
+    --accent: #ffb347;
     
     --color-success: #5cd084;
     --color-success-soft: #8ce0a8;

@@ -14,8 +14,8 @@
                     <div class="collection with-header">
                         <div class="collection-header">
                             <h5>
-                                <span class="@_statusBadgeColor">@_statusBadgeText</span>
                                 @_mainPanelMessage
+                                <StatusBadge Status="@_statusText" TooltipText="@_statusText" />
                             </h5>
                         </div>
                         @foreach (var system in _systems)
@@ -61,9 +61,8 @@ else
     </div>
 }
 @code {
-    private string _statusBadgeColor = "";
     private string _mainPanelMessage = "";
-    private string _statusBadgeText = "";
+    private string _statusText = "";
     private IList<string> _systems = new List<string>();
     private bool _isOkLoadingSystems = false;
     public bool isError = false;
@@ -73,8 +72,7 @@ else
         try
         {
             var (message, status) = await MessageService.GetOverallStatus();
-            _statusBadgeColor = status ? "badge green white-text" : "badge red white-text";
-            _statusBadgeText = status ? "OK" : "Fail";
+            _statusText = status ? "Graceful" : "Down";
             var result = await sessionStorageService.ContainKeyAsync("SystemList");
             var ttlSet = await sessionStorageService.ContainKeyAsync("TTL");
             var ttl = await sessionStorageService.GetItemAsync<DateTime>("TTL");

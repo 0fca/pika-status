@@ -158,7 +158,6 @@ nav ul {
 }
 
 nav ul li {
-  float: left;
   margin: 0;
   padding: 0;
 }
@@ -173,6 +172,33 @@ nav ul a {
 
 nav ul.right {
   float: right;
+}
+
+/* Nav actions - flex row for icon buttons */
+nav ul.nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 64px;
+  padding-right: 8px;
+}
+
+nav ul.nav-actions li {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Prevent nav ul a from overriding .menu-btn inside nav-actions */
+nav ul.nav-actions a.menu-btn {
+  padding: 0;
+  height: 40px;
+  line-height: normal;
+}
+
+nav ul.nav-actions form {
+  display: flex;
+  align-items: center;
 }
 
 .sidenav {
@@ -278,10 +304,24 @@ nav ul.right {
 }
 
 .app-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
   color: var(--color-text) !important;
-  background-color: inherit !important;
-  border-bottom: 1px solid var(--color-border) !important;
-  transition: background-color var(--transition-fast);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+}
+
+.app-menu-item:hover {
+  background: var(--color-background-mute) !important;
+  color: var(--color-primary) !important;
+  text-decoration: none;
+}
+
+.app-menu-item svg {
+  color: var(--color-primary);
+  flex-shrink: 0;
 }
 
 .browse-collection-item {
@@ -349,14 +389,14 @@ nav ul.right {
 }
 
 .card .card-action a {
-  color: var(--color-primary) !important;
+  color: var(--accent) !important;
   font-weight: var(--font-weight-medium);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
 
 .card .card-action a:hover {
-  color: var(--color-primary-soft) !important;
+  color: var(--color-accent-soft) !important;
 }
 
 /* Constrain card width in grid layouts */
@@ -416,6 +456,29 @@ nav ul.right {
 
 .collection-item:hover {
   background-color: var(--color-background-soft);
+}
+
+/* Message link icon in collection items */
+.message-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  color: var(--color-text-soft);
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.message-link:hover {
+  background: var(--color-background-mute);
+  color: var(--color-primary);
+  text-decoration: none;
+}
+
+.message-link svg {
+  flex-shrink: 0;
 }
 
 /* ==========================================================================
@@ -734,6 +797,13 @@ h1, h2, h3, h4, h5, h6 {
   text-align: center;
 }
 
+.center small {
+  display: block;
+  color: var(--accent);
+  font-size: var(--font-size-base);
+  margin-top: var(--spacing-sm);
+}
+
 .center-align {
   text-align: center !important;
 }
@@ -795,110 +865,77 @@ h1, h2, h3, h4, h5, h6 {
    Dropdowns
    ========================================================================== */
 
-.dropdown-content {
-  background-color: var(--color-card-bg) !important;
+/* App Menu Container - used as <li> class for dropdown positioning */
+.app-menu-container {
+  position: relative;
+}
+
+.menu-btn {
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-soft);
+  transition: all var(--transition-fast);
+}
+
+.menu-btn:hover {
+  background: var(--color-background-mute);
+  color: var(--color-primary);
+}
+
+.menu-btn svg {
+  pointer-events: none;
+}
+
+/* App Menu Dropdown */
+.app-menu-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  width: 280px;
+  background: var(--color-card-bg);
   border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-lg) !important;
   border-radius: var(--radius-lg);
-  display: none;
-  position: fixed !important;
-  top: 64px !important;
-  z-index: 9999 !important;
-  will-change: width, height;
+  box-shadow: var(--shadow-lg);
+  z-index: 1000;
+  overflow: hidden;
   opacity: 0;
-  transform-origin: top;
-  transform: scaleY(0);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: all 0.2s ease;
 }
 
-.dropdown-content.active {
-  display: block;
+.app-menu-dropdown.open {
   opacity: 1;
-  transform: scaleY(1);
+  transform: translateY(0);
+  pointer-events: auto;
 }
 
-.dropdown-content li > a,
-.dropdown-content li > span {
-  color: var(--color-text) !important;
+.app-menu-header {
+  padding: 20px;
+  text-align: center;
+  border-bottom: 1px solid var(--color-border);
 }
 
-.dropdown-content li:hover,
-.dropdown-content li.active {
-  background-color: var(--color-background-mute) !important;
-}
-
-.appdropdown {
-  width: 300px !important;
-  min-height: auto !important;
-  right: 16px !important;
-  left: auto !important;
-  padding: 0 !important;
-  height: auto !important;
-  max-height: none !important;
-}
-
-.appdropdown.card {
-  margin: 0 !important;
-  height: auto !important;
-}
-
-.appdropdown .card-content {
-  padding: var(--spacing-md) !important;
-  height: auto !important;
-}
-
-.appdropdown .card-title {
-  font-size: var(--font-size-lg) !important;
-  margin-bottom: var(--spacing-md);
-  padding: var(--spacing-sm) 0;
-}
-
-.appdropdown .card-title img {
+.app-menu-header img {
   max-height: 40px;
   max-width: 100%;
 }
 
-.appdropdown .collection {
-  margin: 0;
-  border: none;
+.app-menu-items {
+  padding: 8px 0;
 }
 
-.appdropdown .collection-item {
-  display: flex;
-  align-items: center;
-  padding: var(--spacing-md) var(--spacing-lg);
-  border-bottom: 1px solid var(--color-border) !important;
-  background-color: transparent !important;
-}
-
-.appdropdown .collection-item:last-child {
-  border-bottom: none !important;
-}
-
-.appdropdown .collection-item:hover {
-  background-color: var(--color-background-mute) !important;
-}
-
-.secondary-content {
-  float: right;
-  margin-left: var(--spacing-md);
-  font-size: 20px;
-}
-
-/* Dropdown overlay */
-.dropdown-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: transparent;
-  z-index: 999;
-  display: none;
-}
-
-.dropdown-overlay.active {
-  display: block;
+@media (max-width: 480px) {
+  .app-menu-dropdown {
+    width: 240px;
+  }
 }
 
 /* ==========================================================================
@@ -1088,19 +1125,7 @@ h1, h2, h3, h4, h5, h6 {
   background-color: var(--color-background-mute) !important;
 }
 
-.app-menu {
-  width: fit-content !important;
-}
 
-.app-menu-button {
-  color: var(--color-text);
-  background-color: transparent;
-}
-
-.app-menu-button:hover {
-  color: var(--color-primary-soft);
-  background-color: transparent;
-}
 
 /* Accessibility helpers */
 .hidden,

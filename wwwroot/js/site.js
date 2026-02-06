@@ -55,54 +55,24 @@ document.addEventListener('DOMContentLoaded', function() {
     });
   }
   
-  // Manual dropdown handling
-  const appDropdown = document.getElementById('app-dropdown');
-  const appTrigger = document.getElementById('app-drop-link');
+  // App menu dropdown handling
+  const appMenuDropdown = document.getElementById('app-menu-dropdown');
+  const appMenuTrigger = document.getElementById('app-menu-trigger');
   
-  console.log('Dropdown elements:', { appDropdown, appTrigger });
-  
-  let showAppMenu = false;
-  
-  // Add click handlers
-  if (appTrigger && appDropdown) {
-    appTrigger.addEventListener('click', function(e) {
+  if (appMenuTrigger && appMenuDropdown) {
+    appMenuTrigger.addEventListener('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
-      console.log('App trigger clicked, showAppMenu:', showAppMenu);
-      
-      showAppMenu = !showAppMenu;
-      
-      if (showAppMenu) {
-        console.log('Opening app dropdown');
-        appDropdown.style.setProperty('display', 'block', 'important');
-        requestAnimationFrame(() => {
-          appDropdown.style.setProperty('opacity', '1', 'important');
-          appDropdown.style.setProperty('transform', 'scaleY(1)', 'important');
-        });
-      } else {
-        console.log('Closing app dropdown');
-        appDropdown.style.setProperty('opacity', '0', 'important');
-        appDropdown.style.setProperty('transform', 'scaleY(0)', 'important');
-        setTimeout(() => {
-          appDropdown.style.setProperty('display', 'none', 'important');
-        }, 300);
-      }
+      appMenuDropdown.classList.toggle('open');
     });
   }
   
-  // Close dropdowns when clicking outside
+  // Close app menu when clicking outside
   document.addEventListener('click', function(e) {
     const target = e.target;
-    if (!target.closest('.appdropdown') && !target.closest('.dropdown-trigger')) {
-      console.log('Clicked outside, closing dropdowns');
-      showAppMenu = false;
-      
-      if (appDropdown) {
-        appDropdown.style.setProperty('opacity', '0', 'important');
-        appDropdown.style.setProperty('transform', 'scaleY(0)', 'important');
-        setTimeout(() => {
-          appDropdown.style.setProperty('display', 'none', 'important');
-        }, 300);
+    if (!target.closest('.app-menu-container')) {
+      if (appMenuDropdown) {
+        appMenuDropdown.classList.remove('open');
       }
     }
   });
