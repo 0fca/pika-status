@@ -1,4 +1,4 @@
-﻿FROM 192.168.1.252:5030/pika.cloud/pika.domain AS  build-env
+﻿FROM 192.168.1.252:5030/pika-cloud/pika.domain AS  build-env
 
 COPY *.csproj .
 
