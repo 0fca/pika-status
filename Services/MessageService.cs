@@ -42,7 +42,7 @@ namespace PikaStatus.Services
             }
             var message = await HttpClientHelper
                 .GetMessagesAsync(url);
-            return new Tuple<bool, List<MessageEntity>>(message.Status, message.Data);
+            return new Tuple<bool, List<MessageEntity>>(message.Status, message.Data.AsEnumerable().Reverse().ToList());
         }
         
         public async Task<Tuple<bool, List<IssueEntity>>> GetIssues(string name, int id)

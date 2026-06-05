@@ -1,0 +1,1199 @@
+:root {
+    --pika-bg: #f5f5f5;
+    --pika-bg-rim: #e8edf5;
+    --pika-grid: rgba(96, 127, 186, 0.12);
+    --pika-grid-strong: rgba(10, 68, 146, 0.18);
+
+    --pika-surface: #ffffff;
+    --pika-surface-strong: #f3f6fb;
+    --pika-surface-muted: #dde6f4;
+
+    --pika-text: #222222;
+    --pika-text-muted: #3b4962;
+    --pika-text-soft: #5f7192;
+
+    --pika-line: #222222;
+    --pika-line-soft: rgba(34, 34, 34, 0.18);
+
+    --pika-salmon: #d7e2f5;
+    --pika-mint: #b3d4fc;
+    --pika-blue: #607fba;
+    --pika-amber: #9cb4de;
+    --pika-lilac: #dbe6fb;
+
+    --pika-shadow: 6px 6px 0 #222222;
+    --pika-shadow-soft: 4px 4px 0 rgba(34, 34, 34, 0.78);
+    --pika-shadow-rest: 8px 8px 0 rgba(96, 127, 186, 0.18);
+
+    --pika-radius-lg: 26px;
+    --pika-radius-md: 16px;
+    --pika-radius-sm: 10px;
+    --pika-radius-xs: 4px;
+
+    --pika-font-ui: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    --pika-font-mono: "JetBrains Mono", "Fira Code", "SFMono-Regular", Consolas, monospace;
+}
+
+.pika-page {
+    position: relative;
+    isolation: isolate;
+
+    width: min(1180px, calc(100% - 32px));
+    min-height: calc(100vh - 32px);
+    margin: 16px auto;
+    padding: 6px 0 40px;
+
+    color: var(--pika-text);
+    font-family: var(--pika-font-ui);
+}
+
+.pika-page::before,
+.pika-page::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+}
+
+.pika-page::before {
+    background:
+        radial-gradient(circle at 16% 12%, rgba(179, 212, 252, 0.24), transparent 26%),
+        radial-gradient(circle at 82% 18%, rgba(96, 127, 186, 0.18), transparent 28%),
+        radial-gradient(circle at 78% 80%, rgba(10, 68, 146, 0.12), transparent 26%),
+        linear-gradient(180deg, var(--pika-bg), var(--pika-bg-rim));
+}
+
+.pika-page::after {
+    z-index: -1;
+    background:
+        linear-gradient(var(--pika-grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--pika-grid) 1px, transparent 1px);
+    background-size: 24px 24px;
+    opacity: 0.82;
+}
+
+.pika-page a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.pika-page :focus-visible {
+    outline: 3px solid var(--pika-blue);
+    outline-offset: 3px;
+}
+
+.pika-topbar,
+.pika-hero,
+.pika-app-card,
+.pika-footer {
+    position: relative;
+    border: 2px solid var(--pika-line);
+    border-radius: var(--pika-radius-md);
+    background: linear-gradient(180deg, var(--pika-surface), var(--pika-surface-strong));
+}
+
+.pika-topbar::before,
+.pika-hero::before,
+.pika-app-card::before,
+.pika-footer::before {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    border: 1px dashed rgba(52, 44, 37, 0.14);
+    border-radius: calc(var(--pika-radius-md) - 6px);
+    pointer-events: none;
+}
+
+.pika-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+
+    padding: 16px 18px;
+    box-shadow: var(--pika-shadow-rest);
+
+    position: sticky;
+    top: 14px;
+    z-index: 10;
+}
+
+.pika-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+}
+
+.pika-brand-logo {
+    display: block;
+    width: auto;
+    height: 44px;
+    max-width: 160px;
+}
+
+.pika-brand-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.pika-brand-copy small,
+.pika-nav,
+.pika-status-strip,
+.pika-eyebrow,
+.pika-button,
+.pika-panel-label,
+.pika-card-meta,
+.pika-card-open,
+.pika-footer-links,
+.pika-footer-note {
+    font-family: var(--pika-font-mono);
+    text-transform: uppercase;
+}
+
+.pika-brand-copy small {
+    color: var(--pika-text-soft);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+}
+
+.pika-brand-copy strong {
+    font-size: 1.08rem;
+    letter-spacing: -0.04em;
+}
+
+.pika-nav {
+    display: flex;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: flex-start;
+    gap: 8px;
+    background: transparent;
+    font-size: 0.76rem;
+    letter-spacing: 0.06em;
+}
+
+.pika-nav a,
+.pika-nav summary,
+.pika-auth-action {
+    padding: 10px 12px;
+    border: 2px solid transparent;
+    border-radius: var(--pika-radius-xs);
+    color: var(--pika-text-muted);
+    transition: transform 140ms ease, border-color 140ms ease, background-color 140ms ease, box-shadow 140ms ease;
+}
+
+.pika-nav a:hover,
+.pika-nav summary:hover,
+.pika-auth-action:hover {
+    border-color: var(--pika-line);
+    color: var(--pika-text);
+    background: var(--pika-surface-strong);
+}
+
+.pika-nav-dock,
+.pika-auth-dock {
+    position: relative;
+}
+
+.pika-nav-dock > summary,
+.pika-auth-dock > summary {
+    list-style: none;
+}
+
+.pika-nav-dock > summary::-webkit-details-marker,
+.pika-auth-dock > summary::-webkit-details-marker {
+    display: none;
+}
+
+.pika-nav-trigger,
+.pika-nav-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-height: 44px;
+    cursor: pointer;
+    background: transparent;
+}
+
+.pika-nav-mobile-label {
+    display: none;
+}
+
+.pika-nav-trigger .material-icons {
+    font-size: 1.1rem;
+}
+
+.pika-nav-menu,
+.pika-auth-menu {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 10px);
+    z-index: 20;
+
+    min-width: 220px;
+    padding: 10px;
+
+    border: 2px solid var(--pika-line);
+    border-radius: var(--pika-radius-sm);
+    background: linear-gradient(180deg, var(--pika-surface), var(--pika-surface-strong));
+    box-shadow: var(--pika-shadow-rest);
+
+    display: grid;
+    gap: 8px;
+
+    opacity: 0;
+    transform: translateY(-8px);
+    pointer-events: none;
+
+    transition: opacity 160ms ease, transform 160ms ease;
+}
+
+.pika-nav-menu a,
+.pika-auth-menu a,
+.pika-auth-action {
+    width: 100%;
+    border-color: var(--pika-line-soft);
+    background: transparent;
+}
+
+.pika-nav-dock:hover .pika-nav-menu,
+.pika-nav-dock:focus-within .pika-nav-menu,
+.pika-nav-dock[open] .pika-nav-menu,
+.pika-auth-dock:hover .pika-auth-menu,
+.pika-auth-dock:focus-within .pika-auth-menu,
+.pika-auth-dock[open] .pika-auth-menu {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+}
+
+.pika-auth-label {
+    display: block;
+    padding: 10px 12px 4px;
+    color: var(--pika-text-soft);
+    font-size: 0.68rem;
+    line-height: 1.4;
+    word-break: break-word;
+}
+
+.pika-auth-action {
+    font: inherit;
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: left;
+    cursor: pointer;
+    appearance: none;
+}
+
+.pika-auth-menu form {
+    margin: 0;
+}
+
+.pika-nav-login {
+    border-color: var(--pika-line) !important;
+    color: var(--pika-blue) !important;
+    background: transparent;
+    box-shadow: 3px 3px 0 var(--pika-line);
+}
+
+.pika-nav-login:hover {
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0 var(--pika-line);
+}
+
+.pika-nav-login .material-icons {
+    font-size: 1.35rem;
+}
+
+.pika-shell {
+    display: grid;
+    gap: 22px;
+    margin-top: 22px;
+}
+
+.pika-view-panel,
+.pika-status-panel,
+.pika-message-card {
+    position: relative;
+    border: 2px solid var(--pika-line);
+    border-radius: var(--pika-radius-md);
+    background: linear-gradient(180deg, var(--pika-surface), var(--pika-surface-strong));
+    box-shadow: var(--pika-shadow-rest);
+}
+
+.pika-view-panel,
+.pika-status-panel {
+    padding: 18px;
+}
+
+.pika-view-hero,
+.pika-status-panel-header,
+.pika-message-card-header,
+.pika-status-item-topline {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.pika-view-hero h1,
+.pika-status-panel-header h2,
+.pika-message-card h2 {
+    margin: 0;
+    letter-spacing: -0.05em;
+}
+
+.pika-view-hero h1 {
+    font-size: clamp(2.4rem, 6vw, 4rem);
+}
+
+.pika-status-panel-header h2,
+.pika-message-card h2,
+.pika-status-item h3 {
+    font-size: 1.2rem;
+}
+
+.pika-view-copy,
+.pika-view-summary,
+.pika-status-item p,
+.pika-message-card p,
+.pika-feedback,
+.pika-feedback-note {
+    color: var(--pika-text-muted);
+    line-height: 1.65;
+}
+
+.pika-view-copy {
+    max-width: 680px;
+    margin: 12px 0 0;
+}
+
+.pika-view-summary {
+    margin: 18px 0 0;
+}
+
+.pika-status-grid,
+.pika-message-grid {
+    display: grid;
+    gap: 18px;
+}
+
+.pika-status-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pika-status-list {
+    display: grid;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.pika-status-item,
+.pika-message-card {
+    padding: 16px;
+}
+
+.pika-status-item {
+    display: flex;
+    align-items: start;
+    justify-content: space-between;
+    gap: 16px;
+    border: 2px solid var(--pika-line-soft);
+    border-radius: var(--pika-radius-sm);
+    background: var(--pika-surface-strong);
+}
+
+.pika-status-item h3,
+.pika-message-card h2 {
+    margin: 0;
+}
+
+.pika-status-item p,
+.pika-message-card dl,
+.pika-message-actions {
+    margin: 8px 0 0;
+}
+
+.pika-inline-meta,
+.pika-message-meta dt {
+    color: var(--pika-text-soft);
+    font-family: var(--pika-font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.pika-status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 34px;
+    padding: 0 12px;
+    border: 2px solid var(--pika-line);
+    border-radius: var(--pika-radius-xs);
+    font-family: var(--pika-font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.pika-status-badge-ok {
+    background: var(--pika-mint);
+}
+
+.pika-status-badge-issue {
+    color: #ffffff;
+    background: #a12828;
+}
+
+.pika-status-badge-neutral {
+    background: var(--pika-surface-muted);
+}
+
+.pika-inline-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 12px;
+    border: 2px solid var(--pika-line);
+    border-radius: var(--pika-radius-xs);
+    background: transparent;
+    box-shadow: 3px 3px 0 var(--pika-line);
+    font-family: var(--pika-font-mono);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.pika-inline-link:hover {
+    transform: translate(1px, 1px);
+    box-shadow: 2px 2px 0 var(--pika-line);
+}
+
+.pika-message-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.pika-message-meta {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.pika-message-meta dt,
+.pika-message-meta dd {
+    margin: 0;
+}
+
+.pika-message-meta dd {
+    margin-top: 4px;
+}
+
+.pika-feedback {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 18px;
+    border: 2px solid var(--pika-line);
+    border-radius: var(--pika-radius-sm);
+    background: linear-gradient(180deg, var(--pika-surface), var(--pika-surface-strong));
+    box-shadow: var(--pika-shadow-rest);
+}
+
+.pika-feedback-alert {
+    color: #ffffff;
+    background: #8f2424;
+}
+
+.pika-feedback-alert .pika-spinner {
+    border-color: rgba(255, 255, 255, 0.35);
+    border-top-color: #ffffff;
+}
+
+.pika-spinner {
+    width: 18px;
+    height: 18px;
+    border: 3px solid var(--pika-line-soft);
+    border-top-color: var(--pika-blue);
+    border-radius: 50%;
+    animation: pika-spin 900ms linear infinite;
+}
+
+@keyframes pika-spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.pika-hero {
+    overflow: hidden;
+    padding: 18px;
+    box-shadow: 10px 10px 0 rgba(52, 44, 37, 0.16);
+}
+
+.pika-hero::after {
+    content: "";
+    position: absolute;
+    right: -34px;
+    top: 56px;
+    width: 220px;
+    height: 220px;
+    border: 2px dashed rgba(52, 44, 37, 0.13);
+    border-radius: 28px;
+    transform: rotate(14deg);
+    pointer-events: none;
+}
+
+.pika-status-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 16px;
+    color: var(--pika-text-muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.06em;
+}
+
+.pika-status-strip span {
+    padding: 8px 10px;
+    border: 2px solid var(--pika-line-soft);
+    border-radius: var(--pika-radius-xs);
+    background: var(--pika-surface-strong);
+}
+
+.pika-hero-grid {
+    display: grid;
+    grid-template-columns: 220px minmax(0, 1fr) 240px;
+    gap: 28px;
+    align-items: center;
+    padding: 26px 22px 30px;
+}
+
+.pika-mark-panel,
+.pika-hero-aside {
+    position: relative;
+    border: 2px solid var(--pika-line);
+    border-radius: var(--pika-radius-sm);
+    background: var(--pika-surface-strong);
+    box-shadow: 5px 5px 0 rgba(52, 44, 37, 0.14);
+}
+
+.pika-mark-panel {
+    padding: 22px 18px 18px;
+}
+
+.pika-pixel-cloud {
+    position: relative;
+    width: 148px;
+    height: 110px;
+    margin: 0 auto;
+    image-rendering: pixelated;
+}
+
+.pika-pixel-cloud span {
+    position: absolute;
+    display: block;
+    border: 2px solid var(--pika-line);
+    box-shadow: 4px 4px 0 var(--pika-line);
+}
+
+.pika-pixel-cloud span:nth-child(1) {
+    left: 8px;
+    top: 40px;
+    width: 104px;
+    height: 40px;
+    background: var(--pika-blue);
+}
+
+.pika-pixel-cloud span:nth-child(2) {
+    left: 28px;
+    top: 18px;
+    width: 42px;
+    height: 42px;
+    background: var(--pika-salmon);
+}
+
+.pika-pixel-cloud span:nth-child(3) {
+    left: 62px;
+    top: 10px;
+    width: 40px;
+    height: 38px;
+    background: var(--pika-mint);
+}
+
+.pika-pixel-cloud span:nth-child(4) {
+    left: 88px;
+    top: 28px;
+    width: 38px;
+    height: 34px;
+    background: var(--pika-lilac);
+}
+
+.pika-pixel-cloud span:nth-child(5) {
+    left: 56px;
+    top: 74px;
+    width: 58px;
+    height: 12px;
+    background: var(--pika-amber);
+}
+
+.pika-mark-caption {
+    margin-top: 18px;
+    color: var(--pika-text-soft);
+    font-family: var(--pika-font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-align: center;
+}
+
+.pika-eyebrow {
+    margin: 0 0 14px;
+    color: var(--pika-text-muted);
+    font-size: 0.78rem;
+    letter-spacing: 0.08em;
+}
+
+.pika-hero-content h1 {
+    margin: 0;
+    font-size: clamp(3.4rem, 9vw, 6.4rem);
+    line-height: 0.92;
+    letter-spacing: -0.08em;
+}
+
+.pika-lead {
+    max-width: 620px;
+    margin: 24px 0 0;
+    color: var(--pika-text-muted);
+    font-size: clamp(1.05rem, 1.8vw, 1.28rem);
+    line-height: 1.7;
+}
+
+.pika-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.pika-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 50px;
+    padding: 0 18px;
+    border: 2px solid var(--pika-line);
+    border-radius: var(--pika-radius-xs);
+    background: var(--pika-surface);
+    box-shadow: var(--pika-shadow-soft);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    transition: transform 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
+}
+
+.pika-button:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 2px 2px 0 var(--pika-line);
+}
+
+.pika-button-primary {
+    color: #ffffff;
+    background: #0a4492;
+}
+
+.pika-button-secondary {
+    background: #f3f6fb;
+}
+
+.pika-hero-aside {
+    padding: 18px;
+}
+
+.pika-panel-label,
+.pika-section-label {
+    margin: 0 0 10px;
+    color: var(--pika-text-soft);
+    font-size: 0.7rem;
+    letter-spacing: 0.08em;
+}
+
+.pika-route-list {
+    display: grid;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.pika-route-list li {
+    display: grid;
+    grid-template-columns: 34px minmax(0, 1fr);
+    gap: 10px;
+    align-items: center;
+    padding: 10px 12px;
+    border: 2px solid var(--pika-line-soft);
+    border-radius: var(--pika-radius-xs);
+    background: var(--pika-surface-strong);
+}
+
+.pika-route-list code {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 26px;
+    border: 2px solid var(--pika-line);
+    border-radius: var(--pika-radius-xs);
+    background: var(--pika-surface-muted);
+    color: var(--pika-text);
+    font-family: var(--pika-font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+}
+
+.pika-dock {
+    display: grid;
+    gap: 16px;
+}
+
+.pika-dock-header {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 0 6px;
+}
+
+.pika-dock-header h2 {
+    margin: 0;
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    letter-spacing: -0.05em;
+}
+
+.pika-dock-header p:last-child,
+.pika-dock-copy {
+    max-width: 560px;
+    margin: 8px 0 0;
+    color: var(--pika-text-muted);
+    line-height: 1.65;
+}
+
+.pika-app-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.pika-app-card {
+    min-height: 252px;
+    min-width: 0;
+    overflow: hidden;
+    box-shadow: var(--pika-shadow-rest);
+    transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.pika-app-card:hover {
+    transform: translate(2px, 2px);
+    box-shadow: 6px 6px 0 rgba(52, 44, 37, 0.12);
+}
+
+.pika-app-card-link {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-height: 100%;
+    width: 100%;
+    min-width: 0;
+    padding: 18px;
+}
+
+.pika-card-meta {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 12px;
+    color: var(--pika-text-soft);
+    font-size: 0.69rem;
+    letter-spacing: 0.08em;
+}
+
+.pika-card-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: auto;
+    padding-top: 14px;
+    padding-right: 6px;
+}
+
+.pika-card-state {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    max-width: calc(100% - 6px);
+    white-space: nowrap;
+}
+
+.pika-card-state::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border: 2px solid var(--pika-line);
+    border-radius: 999px;
+    background: var(--pika-mint);
+    box-shadow: 0 0 0 4px rgba(191, 220, 200, 0.3);
+}
+
+.pika-card-mark {
+    display: inline-grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+    width: 88px;
+}
+
+.pika-card-mark span {
+    display: block;
+    height: 22px;
+    border: 2px solid var(--pika-line);
+    border-radius: var(--pika-radius-xs);
+    box-shadow: 3px 3px 0 var(--pika-line);
+}
+
+.pika-card-mark span:nth-child(1) {
+    background: var(--pika-salmon);
+}
+
+.pika-card-mark span:nth-child(2) {
+    background: var(--pika-mint);
+}
+
+.pika-card-mark span:nth-child(3) {
+    background: var(--pika-blue);
+}
+
+.pika-app-card-mint .pika-card-mark span:nth-child(1) {
+    background: var(--pika-mint);
+}
+
+.pika-app-card-mint .pika-card-mark span:nth-child(2) {
+    background: var(--pika-amber);
+}
+
+.pika-app-card-mint .pika-card-mark span:nth-child(3) {
+    background: var(--pika-lilac);
+}
+
+.pika-app-card-blue .pika-card-mark span:nth-child(1) {
+    background: var(--pika-blue);
+}
+
+.pika-app-card-blue .pika-card-mark span:nth-child(2) {
+    background: var(--pika-mint);
+}
+
+.pika-app-card-blue .pika-card-mark span:nth-child(3) {
+    background: var(--pika-salmon);
+}
+
+.pika-app-card-lilac .pika-card-mark span:nth-child(1) {
+    background: var(--pika-lilac);
+}
+
+.pika-app-card-lilac .pika-card-mark span:nth-child(2) {
+    background: var(--pika-blue);
+}
+
+.pika-app-card-lilac .pika-card-mark span:nth-child(3) {
+    background: var(--pika-amber);
+}
+
+.pika-card-title {
+    font-size: 1.28rem;
+    letter-spacing: -0.04em;
+}
+
+.pika-card-description {
+    color: var(--pika-text-muted);
+    line-height: 1.6;
+    overflow-wrap: anywhere;
+}
+
+.pika-card-open {
+    margin-top: auto;
+    display: inline-flex;
+    align-items: center;
+    max-width: 100%;
+    font-size: 0.76rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    overflow-wrap: anywhere;
+}
+
+.pika-footer {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 20px;
+    align-items: start;
+    margin-top: 24px;
+    padding: 18px;
+    box-shadow: var(--pika-shadow-rest);
+}
+
+.pika-footer-links {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+    margin-top: 10px;
+    font-size: 0.76rem;
+    letter-spacing: 0.08em;
+}
+
+.pika-footer-links a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 10px;
+    border: 2px solid var(--pika-line-soft);
+    border-radius: var(--pika-radius-xs);
+    background: var(--pika-surface-strong);
+    text-align: center;
+}
+
+.pika-footer-links a:hover {
+    border-color: var(--pika-line);
+}
+
+.pika-footer-note {
+    margin: 0;
+    justify-self: end;
+    color: var(--pika-text-muted);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+}
+
+@media (max-width: 1080px) {
+    .pika-hero-grid {
+        grid-template-columns: 220px minmax(0, 1fr);
+    }
+
+    .pika-hero-aside {
+        grid-column: 1 / -1;
+    }
+
+    .pika-app-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .pika-status-grid,
+    .pika-message-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .pika-page {
+        width: min(100% - 20px, 1180px);
+        margin: 10px auto;
+        padding-bottom: 24px;
+        overflow-x: clip;
+    }
+
+    .pika-topbar {
+        position: static;
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .pika-nav {
+        width: 100%;
+        flex-direction: column;
+        justify-content: flex-start;
+        gap: 10px;
+    }
+
+    .pika-nav-dock {
+        width: 100%;
+    }
+
+    .pika-nav-trigger,
+    .pika-nav-icon {
+        width: 100%;
+        min-height: 40px;
+        padding-inline: 14px;
+    }
+
+    .pika-nav-trigger {
+        justify-content: space-between;
+    }
+
+    .pika-nav-icon {
+        justify-content: space-between;
+    }
+
+    .pika-nav-mobile-label {
+        display: inline;
+        margin-left: auto;
+        font-family: var(--pika-font-mono);
+        font-size: 0.76rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+    }
+
+    .pika-nav-menu,
+    .pika-auth-menu {
+        position: static;
+        min-width: 0;
+        margin-top: 8px;
+        box-shadow: none;
+        width: 100%;
+    }
+
+    .pika-nav-dock:not([open]) .pika-nav-menu,
+    .pika-auth-dock:not([open]) .pika-auth-menu {
+        display: none;
+    }
+
+    .pika-auth-dock {
+        width: 90%;
+    }
+
+    .pika-auth-dock > summary,
+    .pika-nav > a {
+        width: 90%;
+    }
+
+    .pika-hero-grid {
+        grid-template-columns: 1fr;
+        padding: 18px 12px 20px;
+    }
+
+    .pika-view-hero,
+    .pika-status-panel-header,
+    .pika-message-card-header,
+    .pika-status-item,
+    .pika-status-item-topline {
+        flex-direction: column;
+    }
+
+    .pika-message-meta {
+        grid-template-columns: 1fr;
+    }
+
+    .pika-mark-panel,
+    .pika-hero-aside {
+        
+    }
+
+    .pika-pixel-cloud {
+        margin-left: 0;
+    }
+
+    .pika-dock-header,
+    .pika-footer {
+        align-items: start;
+    }
+
+    .pika-dock-header {
+        flex-direction: column;
+    }
+
+    .pika-footer-links {
+        grid-template-columns: 1fr;
+    }
+
+    .pika-app-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .pika-page *,
+    .pika-page *::before,
+    .pika-page *::after {
+        transition: none !important;
+        animation: none !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --pika-bg: #212121;
+        --pika-bg-rim: #0c0c0c;
+        --pika-grid: rgba(96, 127, 186, 0.12);
+        --pika-grid-strong: rgba(96, 127, 186, 0.18);
+
+        --pika-surface: #171717;
+        --pika-surface-strong: #202020;
+        --pika-surface-muted: #2a2f39;
+
+        --pika-text: whitesmoke;
+        --pika-text-muted: #d2d9e5;
+        --pika-text-soft: #9eb1d3;
+
+        --pika-line: whitesmoke;
+        --pika-line-soft: rgba(245, 245, 245, 0.2);
+
+        --pika-salmon: #2a3652;
+        --pika-mint: #334c7f;
+        --pika-blue: #607fba;
+        --pika-amber: #3f4e70;
+        --pika-lilac: #273145;
+
+        --pika-shadow: 6px 6px 0 #0c0c0c;
+        --pika-shadow-soft: 4px 4px 0 rgba(12, 12, 12, 0.88);
+        --pika-shadow-rest: 8px 8px 0 rgba(0, 0, 0, 0.32);
+    }
+
+    .pika-topbar,
+    .pika-hero,
+    .pika-app-card,
+    .pika-footer,
+    .pika-view-panel,
+    .pika-status-panel,
+    .pika-message-card,
+    .pika-feedback {
+        background: linear-gradient(180deg, rgba(23, 23, 23, 0.97), rgba(32, 32, 32, 0.96));
+    }
+
+    .pika-mark-panel,
+    .pika-hero-aside,
+    .pika-status-strip span,
+    .pika-route-list li,
+    .pika-footer-links a,
+    .pika-status-item {
+        background: rgba(23, 23, 23, 0.84);
+    }
+
+    .pika-route-list code {
+        background: var(--pika-surface-muted);
+    }
+
+    .pika-nav-login {
+        color: #607fba !important;
+        background: transparent;
+    }
+
+    .pika-button-primary {
+        color: whitesmoke !important;
+        background: #607fba;
+    }
+
+    .pika-button-secondary {
+        color: var(--pika-text);
+        background: var(--pika-surface-strong);
+    }
+
+    .pika-status-badge-issue,
+    .pika-feedback-alert {
+        background: #7a2222;
+    }
+}

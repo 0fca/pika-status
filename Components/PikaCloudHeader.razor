@@ -1,0 +1,31 @@
+<header class="pika-topbar">
+    <a class="pika-brand" href="/" aria-label="PikaCloud home">
+        <img class="pika-brand-logo" src="/images/pika-logos/pikacloud_brand.png" alt="" aria-hidden="true" />
+
+        <span class="pika-brand-copy">
+            <small>PRIVATE NODE / CLOUDFRONT</small>
+            <strong>PikaCloud</strong>
+        </span>
+    </a>
+
+    <nav class="pika-nav" aria-label="Primary navigation">
+        <details class="pika-nav-dock">
+            <summary class="pika-nav-trigger">
+                <span>Systems</span>
+                <span class="material-icons" aria-hidden="true">expand_more</span>
+            </summary>
+
+            <div class="pika-nav-menu" aria-label="System links">
+                <a href="@CoreAddress/">Core</a>
+                <a href="https://note.lukas-bownik.net/">Note</a>
+                <a href="https://chat.lukas-bownik.net/">Chat</a>
+                <a href="/status">Status</a>
+            </div>
+        </details>
+
+    </nav>
+</header>
+
+@code {
+    private const string CoreAddress = "https://core.lukas-bownik.net";
+}

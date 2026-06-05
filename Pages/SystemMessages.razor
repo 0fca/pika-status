@@ -5,91 +5,89 @@
 @using Pika.Domain.Status.Models
 @using Pika.Domain.Status.Data
 
+<PageTitle>PikaCloud :: Messages :: @SystemName</PageTitle>
 
-<div class="container">
-    <div class="row">
-        <h4 class="grey-text text-darken-3">Messages for @SystemName</h4>
-    </div>
-    <div class="row">
+<div class="pika-page">
+    <PikaCloudHeader />
+
+    <main class="pika-shell">
+        <section class="pika-view-panel" aria-labelledby="messages-title">
+            <div class="pika-view-hero">
+                <div>
+                    <p class="pika-section-label">MESSAGE STREAM</p>
+                    <h1 id="messages-title">@SystemName</h1>
+                    <p class="pika-view-copy">
+                        Historical system messages, issue signals and update timestamps for this node.
+                    </p>
+                </div>
+
+                <a class="pika-button pika-button-secondary" href="/status">Back to status</a>
+            </div>
+
+            @if (_messageEntities != null)
+            {
+                <p class="pika-view-summary">@_messageEntities.Count entries loaded.</p>
+            }
+        </section>
+
         @if (_messageEntities != null && _messageEntities.Count > 0)
         {
-            <div class="col s12 m6 l6">
-                @for (var i = 0; i < _messageEntities.Count; i += 2)
+            <section class="pika-message-grid" aria-label="System messages">
+                @foreach (var message in _messageEntities)
                 {
-                    
-                    var message = _messageEntities[i];
                     var messageType = ValidateMessageType(message.MessageType);
-                    var r = @_badgeColorsDic.TryGetValue(messageType, out var badgeColor); 
-                    <div class="card white grey-text text-darken-3">
-                        <span class="badge @badgeColor">@messageType.ToString()</span>
-                        <div class="card-content">
-                            <span class="card-title">
-                                <b>@message.Message</b>
-                            </span>
-                            <div class="row">
-                                <div class="col s12 m12 l12">
-                                    Message was created at <b>@FormatDate(message.CreatedAt)</b>
-                                </div>
-                                <div class="col s12 m12 l12">
-                                    Message was updated at <b>@FormatDate(message.UpdatedAt)</b>
-                                </div>
-                            </div>
+                    <article class="pika-message-card">
+                        <div class="pika-message-card-header">
+                            <span class="pika-status-badge @GetBadgeClass(messageType)">@messageType</span>
+                            <span class="pika-inline-meta">ID @message.Id</span>
                         </div>
-                    </div>
-                }
-            </div>
-            <div class="col s12 m6 l6">
-                @for (var i = 1; i < _messageEntities.Count; i += 2)
-                {
-                    var message = _messageEntities[i];
-                    var messageType = ValidateMessageType(message.MessageType);
-                    var r = @_badgeColorsDic.TryGetValue(message.MessageType, out var badgeColor);
-                    <div class="card white grey-text text-darken-3">
-                        <span class="badge @badgeColor">@messageType.ToString()</span>
-                        <div class="card-content">
-                            <span class="card-title">
-                                <b>@message.Message</b>
-                            </span>
-                            <div class="row">
-                                <div class="col s12 m12 l12">
-                                    Message was created at <b>@FormatDate(message.CreatedAt)</b>
-                                </div>
-                                <div class="col s12 m12 l12">
-                                    Message was updated at <b>@FormatDate(message.UpdatedAt)</b>
-                                </div>
+
+                        <h2>@message.Message</h2>
+
+                        <dl class="pika-message-meta">
+                            <div>
+                                <dt>Created</dt>
+                                <dd>@FormatDate(message.CreatedAt)</dd>
                             </div>
-                        </div>
+                            <div>
+                                <dt>Updated</dt>
+                                <dd>@FormatDate(message.UpdatedAt)</dd>
+                            </div>
+                        </dl>
+
                         @if (message.MessageType == MessageType.Issue)
                         {
-                            <div class="card-action">
-                                <a href="/@SystemName/Messages/@message.Id/Issues">View issues</a>
+                            <div class="pika-message-actions">
+                                <a class="pika-inline-link" href="/@SystemName/Messages/@message.Id/Issues">View issues ↗</a>
                             </div>
                         }
-                    </div>
+                    </article>
                 }
-            </div>
+            </section>
         }
-        else
+        else if (_messageEntities != null)
         {
             <DataNotAvailable />
         }
-    </div>
+        else
+        {
+            <ProgressSpinner PromptText="Loading system messages..." />
+        }
+    </main>
+
+    <PikaCloudFooter />
 </div>
 
 @code{
     [Parameter]
     public string SystemName { get; set; }
     private Tuple<bool,List<MessageEntity>> _messageTuple;
-    private Dictionary<MessageType, string> _badgeColorsDic = new Dictionary<MessageType, string>();
     private List<MessageEntity>? _messageEntities = null;
 
     protected override async Task OnInitializedAsync()
     {
         _messageTuple = await MessageService.GetMessages(SystemName);
         _messageEntities ??= _messageTuple.Item2;
-        _badgeColorsDic.Add(MessageType.Info, "light-green darken-3 white-text");
-        _badgeColorsDic.Add(MessageType.Issue, "red darken-3 white-text");
-        _badgeColorsDic.Add(MessageType.None, "indigo lighten-4 white-text");
     }
 
     private static MessageType ValidateMessageType(MessageType messageType)
@@ -108,6 +106,16 @@
     private static string FormatDate(DateTime dateTime)
     {
         return dateTime.ToString("dd.MM.yyyy HH:mm");
+    }
+
+    private static string GetBadgeClass(MessageType messageType)
+    {
+        return messageType switch
+        {
+            MessageType.Info => "pika-status-badge-ok",
+            MessageType.Issue => "pika-status-badge-issue",
+            _ => "pika-status-badge-neutral"
+        };
     }
 
 }

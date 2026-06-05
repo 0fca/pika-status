@@ -2,27 +2,23 @@
 @using PikaStatus.Components
 
 
-        @if (isDone == true)
-        {
-            <div class="collection-item">
-                <div class="row">
-                    <div class="col s6 m11 l11">
-                        <span class="flow-text grey-text text-darken-3 left mt-3">
-                            @SystemName
-                        </span>
-                    </div>
-                    <div class="col s6 m1 l1 center-align">
-                        <strong><span class="badge @_messageCardColor white-text center-align mt-4">@_badgeText</span></strong>
-                    </div>
-                </div>
-            </div>
-        }
-        else
-        {
-            <div class="collection-item">
-                <ProgressSpinner PromptText = "Loading details..."/>
-            </div>
-        }
+@if (isDone)
+{
+    <article class="pika-status-item">
+        <div>
+            <h3>@SystemName</h3>
+            <p>Current system state probe.</p>
+        </div>
+
+        <span class="pika-status-badge @_messageCardColor">@_badgeText</span>
+    </article>
+}
+else
+{
+    <div class="pika-status-item">
+        <ProgressSpinner PromptText="Loading details..." />
+    </div>
+}
 
 @code{
     [Parameter]
@@ -47,8 +43,7 @@
         var (status, text) = await MessageService.GetSystemStateText(SystemName);
         //_message = _messageTuple.Item2 ?? "Probably no message is available.";
         isDone = status;
-        _messageCardColor = text.Equals("Graceful") ? "light-green darken-3" : "red darken-3";
+        _messageCardColor = text.Equals("Graceful") ? "pika-status-badge-ok" : "pika-status-badge-issue";
         _badgeText = text;
     }
 }
-

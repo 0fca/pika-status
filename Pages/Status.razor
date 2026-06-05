@@ -3,78 +3,115 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorageService
 @using PikaStatus.Components
 
-@if (!isError)
-{
-    @if (_isOkLoadingSystems
-    && !string.IsNullOrEmpty(_mainPanelMessage))
-    {
-        <div class="container">
-            <div class="row">
-                <div class="col s12 m6 l6">
-                    <div class="collection with-header">
-                        <div class="collection-header">
-                            <h5>
-                                <span class="@_statusBadgeColor">@_statusBadgeText</span>
-                                @_mainPanelMessage
-                            </h5>
-                        </div>
-                        @foreach (var system in _systems)
-                        {
-                            <SystemStatusCollectionItem SystemName="@system" />
-                        }
-                    </div>
-                </div>
-                <div class="col s12 m6 l6">
-                    <div class="collection with-header">
-                        <div class="collection-header">
-                            <h5>Messages</h5>
-                        </div>
-                        @foreach (var system in _systems)
-                        {
-                            <SystemMessageCollectionItem SystemName="@system" />
-                        }
+<PageTitle>PikaCloud :: Status</PageTitle>
 
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-    else if (!_isOkLoadingSystems
-    && !string.IsNullOrEmpty(_mainPanelMessage))
-    {
-        <div class="container">
-            <div class="card-panel havelock darken-3 white-text">
-                @_mainPanelMessage
-            </div>
-        </div>
+<div class="pika-page">
+    <PikaCloudHeader />
 
-    }
-    else
-    {
-        <ProgressSpinner />
-    }
-}
-else
-{
-    <div class="card-panel red darken-3 white-text">
-        Sorry, but an error ocurred.
-    </div>
-}
+    <main class="pika-shell">
+        <section class="pika-view-panel" aria-labelledby="status-title">
+            <div class="pika-view-hero">
+                <div>
+                    <p class="pika-section-label">STATUS NODE</p>
+                    <h1 id="status-title">Cloud Status</h1>
+                    <p class="pika-view-copy">
+                        Live system state, latest message lanes and service availability for the PikaCloud node.
+                    </p>
+                </div>
+
+                @if (!string.IsNullOrEmpty(_mainPanelMessage))
+                {
+                    <span class="pika-status-badge @(IsHealthy ? "pika-status-badge-ok" : "pika-status-badge-issue")">
+                        @StatusText
+                    </span>
+                }
+            </div>
+
+            @if (!string.IsNullOrEmpty(_mainPanelMessage))
+            {
+                <p class="pika-view-summary">@_mainPanelMessage</p>
+            }
+        </section>
+
+        @if (!isError)
+        {
+            @if (_isOkLoadingSystems && !string.IsNullOrEmpty(_mainPanelMessage))
+            {
+                <section class="pika-status-grid" aria-label="Status overview panels">
+                    <section class="pika-status-panel" aria-labelledby="systems-panel-title">
+                        <div class="pika-status-panel-header">
+                            <div>
+                                <p class="pika-panel-label">SYSTEM STATE</p>
+                                <h2 id="systems-panel-title">Systems</h2>
+                            </div>
+
+                            <span class="pika-inline-meta">@_systems.Count nodes</span>
+                        </div>
+
+                        <div class="pika-status-list">
+                            @foreach (var system in _systems)
+                            {
+                                <SystemStatusCollectionItem SystemName="@system" />
+                            }
+                        </div>
+                    </section>
+
+                    <section class="pika-status-panel" aria-labelledby="messages-panel-title">
+                        <div class="pika-status-panel-header">
+                            <div>
+                                <p class="pika-panel-label">LATEST ENTRIES</p>
+                                <h2 id="messages-panel-title">Messages</h2>
+                            </div>
+
+                            <span class="pika-inline-meta">Per system</span>
+                        </div>
+
+                        <div class="pika-status-list">
+                            @foreach (var system in _systems)
+                            {
+                                <SystemMessageCollectionItem SystemName="@system" />
+                            }
+                        </div>
+                    </section>
+                </section>
+            }
+            else if (!_isOkLoadingSystems && !string.IsNullOrEmpty(_mainPanelMessage))
+            {
+                <section class="pika-status-panel">
+                    <p class="pika-feedback-note">@_mainPanelMessage</p>
+                </section>
+            }
+            else
+            {
+                <ProgressSpinner PromptText="Loading cloud status..." />
+            }
+        }
+        else
+        {
+            <section class="pika-status-panel pika-feedback-alert" role="alert">
+                Sorry, but an error ocurred.
+            </section>
+        }
+    </main>
+
+    <PikaCloudFooter />
+</div>
+
 @code {
-    private string _statusBadgeColor = "";
     private string _mainPanelMessage = "";
-    private string _statusBadgeText = "";
     private IList<string> _systems = new List<string>();
     private bool _isOkLoadingSystems = false;
+    private bool IsHealthy = false;
     public bool isError = false;
+
+    private string StatusText => IsHealthy ? "OK" : "FAIL";
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             var (message, status) = await MessageService.GetOverallStatus();
-            _statusBadgeColor = status ? "badge green white-text" : "badge red white-text";
-            _statusBadgeText = status ? "OK" : "Fail";
+            IsHealthy = status;
             var result = await sessionStorageService.ContainKeyAsync("SystemList");
             var ttlSet = await sessionStorageService.ContainKeyAsync("TTL");
             var ttl = await sessionStorageService.GetItemAsync<DateTime>("TTL");

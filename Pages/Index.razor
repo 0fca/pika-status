@@ -1,55 +1,129 @@
 ﻿@page "/"
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
-<!--[if IE]>
-  <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
-<![endif]-->
+<PageTitle>PikaCloud :: Cloudfront</PageTitle>
 
-<div class="container">
-    <div class="row center">
-        <h1 class="center">Welcome to Pika Cloud!</h1>
-    </div>
-    <div class="row center">
-        <div class="col s12 m6 l4">
-            <div class="card small havelock white-text">
-                <span class="card-title">Discover...</span>
-                <div class="card-content flow-text">
-                    tech stuff, games, films and some more with Pika Core, just follow the link below
-                </div>
-                <div class="card-action">
-                    <a href="https://core.lukas-bownik.net/Core/Storage/Browse">Pika Core</a>
-                </div>
+<div class="pika-page">
+    <PikaCloudHeader />
+
+    <main class="pika-shell">
+        <section class="pika-hero" aria-labelledby="cloudfront-title">
+            <div class="pika-status-strip" aria-label="Cloudfront status">
+                <span>NODE: CLOUDFRONT</span>
+                <span>@SessionLabel</span>
+                <span>STORAGE BUS READY</span>
             </div>
-        </div>
-        <div class="col s12 m6 l4">
-            <div class="card small havelock white-text">
-                <span class="card-title">Write down...</span>
-                <div class="card-content flow-text">
-                    whatever is on your mind with Pika Note - a custom, web-based notepad  
+
+            <div class="pika-hero-grid">
+                <div class="pika-mark-panel">
+                    <div class="pika-pixel-cloud" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                    <p class="pika-mark-caption">OBJECT STORAGE / ROUTING / NOTES / STATUS</p>
                 </div>
-                <div class="card-action">
-                    <a href="https://note.lukas-bownik.net/">Pika Note</a>
+
+                <div class="pika-hero-content">
+                    <p class="pika-eyebrow">pika://cloudfront</p>
+
+                    <h1 id="cloudfront-title">PikaCloud</h1>
+
+                    <p class="pika-lead">
+                        Private object cloud for storage, notes, AI tools and infrastructure panels —
+                        served through the Pika ecosystem.
+                    </p>
+
+                    <div class="pika-actions">
+                        <a class="pika-button pika-button-primary" href="https://core.lukas-bownik.net/">
+                            Open Pika Core
+                        </a>
+
+                        <AuthorizeView>
+                            <Authorized>
+                                <a class="pika-button pika-button-secondary" href="https://core.lukas-bownik.net/">
+                                    Open account
+                                </a>
+                            </Authorized>
+                            <NotAuthorized>
+                                <a class="pika-button pika-button-secondary" href="https://api-core.lukas-bownik.net/Identity/Gateway/Login">
+                                    Log in
+                                </a>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </div>
                 </div>
+
+                <aside class="pika-hero-aside" aria-label="Cloudfront routes">
+                    <p class="pika-panel-label">Dock routes</p>
+
+                    <ul class="pika-route-list">
+                        <li><code>01</code><span>Object bus / Core</span></li>
+                        <li><code>02</code><span>Note stack / Note</span></li>
+                        <li><code>03</code><span>Tool manager / AI Assistant</span></li>
+                        <li><code>04</code><span>Status node / Cloud</span></li>
+                    </ul>
+                </aside>
             </div>
-        </div>
-        <div class="col s12 m6 l4">
-            <div class="card small havelock white-text">
-                <span class="card-title">Speed up...</span>
-                <div class="card-content flow-text">
-                    your day-to-day tasks with Pika Chat - AI-powered, tool-based Chat app
+        </section>
+
+        <section class="pika-dock" aria-labelledby="dock-title">
+            <div class="pika-dock-header">
+                <div>
+                    <p class="pika-section-label">APP DOCK</p>
+                    <h2 id="dock-title">Launch into the Pika ecosystem.</h2>
                 </div>
-                <div class="card-action">
-                    <a href="https://chat.lukas-bownik.net/Core/Storage/Browse">Pika Chat</a>
-                </div>
+
+                <p class="pika-dock-copy">
+                    Core services, note space, tool chat and infrastructure visibility are grouped here as a
+                    single front controller.
+                </p>
             </div>
-        </div>
-        <div class="col s12 m6 l4"></div>
-        <div class="col s12 m6 l4">
-            <div class="card small havelock white-text">
-                <span class="card-title">Reach...</span>
-                <div class="card-content flow-text">
-                    out soon and stay tuned for what's about to come!
-                </div>
+
+            <div class="pika-app-grid" aria-label="Pika applications">
+                <PikaAppCard
+                    Number="01"
+                    SystemLabel="OBJECT BUS"
+                    Title="Pika Core"
+                    Description="Browse private files, objects and cloud resources."
+                    Url="https://core.lukas-bownik.net/"
+                    Tone="salmon" />
+
+                <PikaAppCard
+                    Number="02"
+                    SystemLabel="NOTE STACK"
+                    Title="Pika Note"
+                    Description="Write down and organize whatever is on your mind."
+                    Url="https://note.lukas-bownik.net/"
+                    Tone="mint" />
+
+                <PikaAppCard
+                    Number="03"
+                    SystemLabel="TOOL AI ASSISTANT"
+                    Title="Pika AI Assistant"
+                    Description="Speed up daily workflows with AI-powered tools."
+                    Url="https://ai.lukas-bownik.net/"
+                    Tone="blue" />
+
+                <PikaAppCard
+                    Number="04"
+                    SystemLabel="STATUS NODE"
+                    Title="Pika Status"
+                    Description="Check service health, availability and infrastructure state."
+                    Url="/status"
+                    Tone="lilac" />
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
+
+    <PikaCloudFooter />
 </div>
+
+@code {
+    private string SessionLabel => IsAuthorized ? "USER SESSION" : "GUEST SESSION";
+
+    private bool IsAuthorized => HttpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
+}

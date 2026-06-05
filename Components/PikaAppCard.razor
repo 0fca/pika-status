@@ -1,0 +1,43 @@
+﻿<article class="pika-app-card @ToneClass">
+    <a class="pika-app-card-link" href="@Url" aria-label="@($"{Title}: {Description}")">
+        <span class="pika-card-meta">
+            <span>@Number / @SystemLabel</span>
+        </span>
+
+        <span class="pika-card-mark" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span></span>
+        </span>
+
+        <strong class="pika-card-title">@Title</strong>
+
+        <span class="pika-card-description">@Description</span>
+
+        <span class="pika-card-footer">
+            <span class="pika-card-state">OK</span>
+        </span>
+    </a>
+</article>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Number { get; set; } = string.Empty;
+
+    [Parameter, EditorRequired]
+    public string SystemLabel { get; set; } = string.Empty;
+
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter, EditorRequired]
+    public string Description { get; set; } = string.Empty;
+
+    [Parameter, EditorRequired]
+    public string Url { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Tone { get; set; } = "salmon";
+
+    private string ToneClass => $"pika-app-card-{Tone}";
+}
