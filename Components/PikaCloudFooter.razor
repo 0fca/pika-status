@@ -1,0 +1,21 @@
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+
+<footer class="pika-footer">
+    <div>
+        <p class="pika-panel-label">Informational links</p>
+
+        <nav class="pika-footer-links" aria-label="Informational links">
+            <a href="https://lukas-bownik.net/posts/pika-cloud-changelog/">Changelog</a>
+            <a href="@PoliciesAddress">Policies</a>
+            <a href="/status">Cloud Status</a>
+        </nav>
+    </div>
+
+    <p class="pika-footer-note">© @DateTime.UtcNow.Year Ofca / PikaCloud Cloudfront</p>
+</footer>
+
+@code {
+    private string CoreAddress => Configuration.GetSection("CoreAddress").Value ?? "https://core.lukas-bownik.net";
+
+    private string PoliciesAddress => $"{CoreAddress}/Core/Policy";
+}

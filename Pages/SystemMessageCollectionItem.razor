@@ -5,30 +5,23 @@
 
 @if (_messageTuple != null)
 {
-    <div class="collection-item">
-        <div class="row">
-            <div class="col s6 m11 l11">
-                <span class="flow-text grey-text text-darken-3 left">@SystemName</span>
+    <article class="pika-status-item pika-status-item-message">
+        <div>
+            <div class="pika-status-item-topline">
+                <h3>@SystemName</h3>
+                <span class="pika-status-badge @_messageCardColor">@_badgeText</span>
             </div>
-            <div class="col s6 m1 l1 center-align">
-                <a href="/Messages/@SystemName" class="message-link" title="View messages for @SystemName">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <line x1="8" y1="6" x2="21" y2="6"></line>
-                        <line x1="8" y1="12" x2="21" y2="12"></line>
-                        <line x1="8" y1="18" x2="21" y2="18"></line>
-                        <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                        <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                        <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                    </svg>
-                </a>
-            </div>
+
+            <p>@_message</p>
         </div>
-    </div>
+
+        <a class="pika-inline-link" href="/Messages/@SystemName">Open log ↗</a>
+    </article>
 }
 else
 {
-    <div class="collection-item">
-        <ProgressSpinner PromptText = "Loading details..."/>
+    <div class="pika-status-item">
+        <ProgressSpinner PromptText="Loading details..." />
     </div>
 }
 
@@ -52,9 +45,8 @@ else
         }
 
         var (status, text) = await MessageService.GetSystemStateText(SystemName);
-        _message = _messageTuple.Item2 ?? "Probably no message is available.";
-        _messageCardColor = text.Equals("Graceful") ? "light-green darken-3" : "red darken-3";
-        _badgeText = text;
+        _message = string.IsNullOrWhiteSpace(_messageTuple.Item2) ? "No messages available for this system." : _messageTuple.Item2;
+        _messageCardColor = text.Equals("Graceful", StringComparison.OrdinalIgnoreCase) ? "pika-status-badge-ok" : "pika-status-badge-issue";
+        _badgeText = string.IsNullOrWhiteSpace(text) ? "Unknown" : text;
     }
 }
-

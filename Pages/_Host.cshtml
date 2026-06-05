@@ -1,12 +1,8 @@
 ﻿@page "/"
 @namespace PikaStatus.Pages
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
-@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @{
     Layout = null;
-    bool isAuthorized = HttpContext.User.Identity!.IsAuthenticated;
-    string coreAddress = Configuration.GetSection("CoreAddress").Value ?? "https://core.lukas-bownik.net";
-    string apiCoreAddress = Configuration.GetSection("ApiCoreAddress").Value ?? "https://api-core.lukas-bownik.net";
 }
 
 <!doctype html>
@@ -37,156 +33,20 @@
 </head>
 
 <body class="fullscreen">
-    <div class="navbar-fixed">
-        <nav class="z-depth-0">
-            <div class="nav-wrapper white">
-                <a href="#!" data-target="slide-out" class="sidenav-trigger hide-on-large-only">
-                    <i class="material-icons">menu</i>
-                </a>
-                <a class="brand-logo brand brand-margin brand-text" href="/">
-                      <img src="/images/pika-logos/pikacloud_brand.png" class="responsive-img" alt="Pika Cloud" style="height: inherit;"/>
-                </a>
-                <ul class="right hide-on-med-and-down nav-actions">
-                    <li class="app-menu-container">
-                        <button id="app-menu-trigger" class="menu-btn" title="PikaCloud Apps">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect x="3" y="3" width="7" height="7"></rect>
-                                <rect x="14" y="3" width="7" height="7"></rect>
-                                <rect x="14" y="14" width="7" height="7"></rect>
-                                <rect x="3" y="14" width="7" height="7"></rect>
-                            </svg>
-                        </button>
-                        <div id="app-menu-dropdown" class="app-menu-dropdown">
-                                <div class="app-menu-header">
-                                    <img src="/images/pika-logos/pikacloud_apps.svg" alt="Pika Apps" />
-                                </div>
-                                <div class="app-menu-items">
-                                    <a class="app-menu-item" href="https://cloud.lukas-bownik.net/" title="Cloudfront">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
-                                        </svg>
-                                        <span>Cloudfront</span>
-                                    </a>
-                                    <a class="app-menu-item" href="@coreAddress" title="Pika Core">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
-                                            <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
-                                            <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
-                                        </svg>
-                                        <span>Pika Core</span>
-                                    </a>
-                                    <a class="app-menu-item" href="https://chat.lukas-bownik.net/" title="Pika Chat">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-                                        </svg>
-                                        <span>Pika Chat</span>
-                                    </a>
-                                    <a class="app-menu-item" href="https://note.lukas-bownik.net/" title="Pika Note">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                                            <polyline points="14 2 14 8 20 8"></polyline>
-                                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                                            <polyline points="10 9 9 9 8 9"></polyline>
-                                        </svg>
-                                        <span>Pika Note</span>
-                                    </a>
-                                    <a class="app-menu-item" href="https://cloud.lukas-bownik.net/status" title="Pika Status">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
-                                        </svg>
-                                        <span>Pika Status</span>
-                                    </a>
-                                </div>
-                            </div>
-                    </li>
-                    <li>
-                        @if (isAuthorized) {
-                            <form method="post" action="@apiCoreAddress/Identity/Gateway/Logout">
-                                <button class="menu-btn" title="Log out">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                                        <polyline points="16 17 21 12 16 7"></polyline>
-                                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                                    </svg>
-                                </button>
-                            </form>
-                        } else {
-                            <a class="menu-btn" href="@coreAddress/login" title="Log in">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
-                                    <polyline points="10 17 15 12 10 7"></polyline>
-                                    <line x1="15" y1="12" x2="3" y2="12"></line>
-                                </svg>
-                            </a>
-                        }
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    </div>
-    <ul id="slide-out" class="sidenav">
-        <li><a href="@coreAddress/">Pika Core Browser</a></li>
-        <li><a href="https://chat.lukas-bownik.net/">Pika Chat</a></li>
-        <li><a href="https://note.lukas-bownik.net/">Pika Note</a></li>
-        <li><a href="/status">Pika Status</a></li>
-        <li>
-        @if (isAuthorized)
-        {
-            <form method="post" action="@coreAddress/Identity/Gateway/Logout">
-                <button class="btn btn-flat grey-text text-darken-3">Log out</button>
-            </form>
-        }
-        else
-        {
-            <a class="grey-text text-darken-3" href="@coreAddress/login">Log in</a>
-        }
-        </li>
-    </ul>
-    
-    <div class="sidenav-overlay"></div>
-    
     <app>
         <component type="typeof(App)" render-mode="ServerPrerendered" />
     </app>
-      <footer class="page-footer dark">
-        <div class="container">
-            <div class="row">
-                <div class="col s12 m6 l6">
-                    <h6 class="white-text">Informational Stuff</h6>
-                    <ul>
-                        <li><a class="grey-text text-lighten-3" href="https://lukas-bownik.net/posts/pika-cloud-changelog/">Changelog</a></li>
-                        <li><a class="grey-text text-lighten-3" href="@coreAddress/policy">PikaCloud Policies</a></li>
-                    </ul>
-                </div>
-                 <div class="col s12 m6 l6">
-                    <h6 class="white-text">Cloud Status</h6>
-                    <ul>
-                        <li><a class="grey-text text-lighten-3" href="/status">Status</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
+    <div id="blazor-error-ui">
+        <environment include="Staging,Production">
+            An error has occurred. This application may no longer respond until reloaded.
+        </environment>
+        <environment include="Development">
+            An unhandled exception has occurred. See browser dev tools for details.
+        </environment>
+        <a href="" class="reload">Reload</a>
+        <a class="dismiss">🗙</a>
+    </div>
 
-        <div class="footer-copyright grey darken-4">
-            <div class="container">
-                © <span id="date"></span> Ofca - <small>The cloud storage - private and secure by design</small>
-            </div>
-        </div>
-    </footer>
-    
-<div id="blazor-error-ui">
-    <environment include="Staging,Production">
-        An error has occurred. This application may no longer respond until reloaded.
-    </environment>
-    <environment include="Development">
-        An unhandled exception has occurred. See browser dev tools for details.
-    </environment>
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
-</div>
-
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
-<script src="_framework/blazor.server.js"></script>
+    <script src="_framework/blazor.server.js"></script>
 </body>
 </html>

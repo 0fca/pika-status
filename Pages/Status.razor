@@ -3,76 +3,125 @@
 @inject Blazored.SessionStorage.ISessionStorageService sessionStorageService
 @using PikaStatus.Components
 
-@if (!isError)
-{
-    @if (_isOkLoadingSystems
-    && !string.IsNullOrEmpty(_mainPanelMessage))
-    {
-        <div class="container">
-            <div class="row">
-                <div class="col s12 m6 l6">
-                    <div class="collection with-header">
-                        <div class="collection-header">
-                            <h5>
-                                @_mainPanelMessage
-                                <StatusBadge Status="@_statusText" TooltipText="@_statusText" />
-                            </h5>
-                        </div>
-                        @foreach (var system in _systems)
-                        {
-                            <SystemStatusCollectionItem SystemName="@system" />
-                        }
-                    </div>
-                </div>
-                <div class="col s12 m6 l6">
-                    <div class="collection with-header">
-                        <div class="collection-header">
-                            <h5>Messages</h5>
-                        </div>
-                        @foreach (var system in _systems)
-                        {
-                            <SystemMessageCollectionItem SystemName="@system" />
-                        }
+<PageTitle>PikaCloud :: Status</PageTitle>
 
-                    </div>
-                </div>
-            </div>
-        </div>
-    }
-    else if (!_isOkLoadingSystems
-    && !string.IsNullOrEmpty(_mainPanelMessage))
-    {
-        <div class="container">
-            <div class="card-panel havelock darken-3 white-text">
-                @_mainPanelMessage
-            </div>
-        </div>
+<div class="pika-page">
+    <PikaCloudHeader />
 
-    }
-    else
-    {
-        <ProgressSpinner />
-    }
-}
-else
-{
-    <div class="card-panel red darken-3 white-text">
-        Sorry, but an error ocurred.
-    </div>
-}
+    <main class="pika-shell">
+        <section class="pika-view-panel" aria-labelledby="status-title">
+            <div class="pika-view-hero">
+                <div>
+                    <p class="pika-section-label">STATUS NODE</p>
+                    <h1 id="status-title">Cloud Status</h1>
+                    <p class="pika-view-copy">
+                        Live system state, latest message lanes and service availability for the PikaCloud node.
+                    </p>
+                </div>
+
+                @if (!string.IsNullOrEmpty(_mainPanelMessage))
+                {
+                    <span class="pika-status-badge @(IsHealthy ? "pika-status-badge-ok" : "pika-status-badge-issue")">
+                        @StatusText
+                    </span>
+                }
+            </div>
+
+            @if (!string.IsNullOrEmpty(_mainPanelMessage))
+            {
+                <p class="pika-view-summary">@_mainPanelMessage</p>
+            }
+        </section>
+
+        @if (!isError)
+        {
+            @if (_isOkLoadingSystems && !string.IsNullOrEmpty(_mainPanelMessage))
+            {
+                <section class="pika-status-grid" aria-label="Status overview panels">
+                    <section class="pika-status-panel" aria-labelledby="systems-panel-title">
+                        <div class="pika-status-panel-header">
+                            <div>
+                                <p class="pika-panel-label">SYSTEM STATE</p>
+                                <h2 id="systems-panel-title">Systems</h2>
+                            </div>
+
+                            <span class="pika-inline-meta">@_systems.Count systems</span>
+                        </div>
+
+                        <div class="pika-status-list">
+                            @foreach (var system in _systems)
+                            {
+                                <SystemStatusCollectionItem SystemName="@system" />
+                            }
+                        </div>
+                    </section>
+
+                    <section class="pika-status-panel" aria-labelledby="messages-panel-title">
+                        <div class="pika-status-panel-header">
+                            <div>
+                                <p class="pika-panel-label">LATEST ENTRIES</p>
+                                <h2 id="messages-panel-title">Messages</h2>
+                            </div>
+
+                            <span class="pika-inline-meta">Per system</span>
+                        </div>
+
+                        <div class="pika-status-list">
+                            @foreach (var system in _systems)
+                            {
+                                <SystemMessageCollectionItem SystemName="@system" />
+                            }
+                        </div>
+                    </section>
+                </section>
+            }
+            else if (!_isOkLoadingSystems && !string.IsNullOrEmpty(_mainPanelMessage))
+            {
+                <section class="pika-status-panel">
+                    <div class="pika-status-panel-header">
+                        <div>
+                            <p class="pika-panel-label">SYSTEM STATE</p>
+                            <h2>Systems unavailable</h2>
+                        </div>
+
+                        <span class="pika-status-badge pika-status-badge-issue">Offline</span>
+                    </div>
+
+                    <p class="pika-view-summary">@_mainPanelMessage</p>
+                </section>
+            }
+            else
+            {
+                <ProgressSpinner PromptText="Loading cloud status..." />
+            }
+        }
+        else
+        {
+            <section class="pika-status-panel pika-feedback-alert" role="alert">
+                Sorry, but an error ocurred.
+            </section>
+        }
+    </main>
+
+    <PikaCloudFooter />
+</div>
+
 @code {
     private string _mainPanelMessage = "";
-    private string _statusText = "";
     private IList<string> _systems = new List<string>();
     private bool _isOkLoadingSystems = false;
+    private bool IsHealthy = false;
     public bool isError = false;
+
+    private string StatusText => IsHealthy ? "OK" : "FAIL";
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
             var (message, status) = await MessageService.GetOverallStatus();
-            _statusText = status ? "Graceful" : "Down";
+            IsHealthy = status;
+            _mainPanelMessage = message;
             var result = await sessionStorageService.ContainKeyAsync("SystemList");
             var ttlSet = await sessionStorageService.ContainKeyAsync("TTL");
             var ttl = await sessionStorageService.GetItemAsync<DateTime>("TTL");
@@ -82,9 +131,8 @@ else
             }
             if (result && ttl > DateTime.UtcNow)
             {
-                _systems = await sessionStorageService.GetItemAsync<IList<string>>("SystemList");
+                _systems = await sessionStorageService.GetItemAsync<IList<string>>("SystemList") ?? new List<string>();
                 _isOkLoadingSystems = true;
-                _mainPanelMessage = message;
             }
             else
             {
@@ -96,13 +144,12 @@ else
                         _systems = systemList;
                     }
                     _isOkLoadingSystems = isOkayLoadingSystems;
-                    _mainPanelMessage = message;
                     await sessionStorageService.SetItemAsync("SystemList", _systems);
                     await sessionStorageService.SetItemAsync("TTL", DateTime.UtcNow.AddMinutes(2));
                 }
                 else
                 {
-                    _isOkLoadingSystems = !status;
+                    _isOkLoadingSystems = false;
                 }
             }
 
@@ -110,6 +157,7 @@ else
         catch
         {
             isError = true;
+            _mainPanelMessage = "Cloud status could not be loaded right now.";
         }
     }
 }

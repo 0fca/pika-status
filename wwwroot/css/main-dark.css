@@ -1,3 +1,5 @@
+﻿@import url("/css/pika-cloudfront.css");
+
 html {
   color: whitesmoke;
   font-size: 15px;
@@ -27,7 +29,6 @@ hr {
   border-top: 1px solid #ccc;
   margin: 1em 0;
   padding: 0;
-
 }
 
 audio,
@@ -72,7 +73,6 @@ textarea {
   width: 1px;
 }
 
-
 .sr-only.focusable:active,
 .sr-only.focusable:focus {
   clip: auto;
@@ -87,20 +87,15 @@ textarea {
 .invisible {
   visibility: hidden;
 }
+
 .clearfix:before,
 .clearfix:after {
   content: " ";
-  /* 1 */
   display: table;
-  /* 2 */
 }
 
 .clearfix:after {
   clear: both;
-}
-
-
-@media only screen and (min-width: 35em) {
 }
 
 @media print,
@@ -109,61 +104,61 @@ textarea {
   (min-resolution: 120dpi) {
 }
 
-
 @media print {
   *,
   *:before,
   *:after {
     background: transparent !important;
     color: #000 !important;
-    /* Black prints faster */
     -webkit-box-shadow: none !important;
     box-shadow: none !important;
     text-shadow: none !important;
   }
+
   a,
   a:visited {
     text-decoration: underline;
   }
+
   a[href]:after {
     content: " (" attr(href) ")";
   }
+
   abbr[title]:after {
     content: " (" attr(title) ")";
   }
-  /*
-     * Don't show links that are fragment identifiers,
-     * or use the `javascript:` pseudo protocol
-     */
+
   a[href^="#"]:after,
   a[href^="javascript:"]:after {
     content: "";
   }
+
   pre {
     white-space: pre-wrap !important;
   }
+
   pre,
   blockquote {
     border: 1px solid #999;
     page-break-inside: avoid;
   }
-  /*
-     * Printing Tables:
-     * https://web.archive.org/web/20180815150934/http://css-discuss.incutio.com/wiki/Printing_Tables
-     */
+
   thead {
     display: table-header-group;
   }
+
   tr,
   img {
     page-break-inside: avoid;
   }
+
   p,
   h2,
   h3 {
     orphans: 3;
     widows: 3;
   }
+
   h2,
   h3 {
     page-break-after: avoid;
@@ -171,7 +166,7 @@ textarea {
 }
 
 .dark{
-  background-color: #212121 !important;
+  background-color: rgb(12, 12, 12) !important;
 }
 
 .section_paragraph{
@@ -185,12 +180,9 @@ textarea {
 .justify-text-block{
   text-align: justify !important;
 }
+
 .fullscreen-container{
   width: 100%;
-}
-
-.dark{
-  background-color: rgb(12, 12, 12) !important;
 }
 
 .accent-text{

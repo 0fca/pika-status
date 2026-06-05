@@ -1,13 +1,7 @@
 ﻿@namespace PikaStatus.Components
-<div class="cotainer-fluid center">
-    <div class="row">
-        <div class="progress white">
-            <div class="indeterminate"></div>
-        </div>
-    </div>
-    <div class="row grey-text text-darken-3">
-        @PromptText
-    </div>
+<div class="pika-feedback" role="status" aria-live="polite">
+    <span class="pika-spinner" aria-hidden="true"></span>
+    <span>@PromptText</span>
 </div>
 
 

@@ -23,7 +23,10 @@ namespace PikaStatus.Services
         {
             var statusMessage = await HttpClientHelper
                 .GetSingleMessageAsync(_configuration.GetConnectionString("OverallStatusEndpoint"));
-            return new Tuple<string, bool>(statusMessage.Messages.Pop(), statusMessage.Status);
+            var message = statusMessage.Messages.Count > 0
+                ? statusMessage.Messages.Pop()
+                : "Cloud status is temporarily unavailable.";
+            return new Tuple<string, bool>(message, statusMessage.Status);
         }
         
         public async Task<Tuple<Stack<string>, bool>> GetOverallStatusDetailed()
@@ -42,7 +45,8 @@ namespace PikaStatus.Services
             }
             var message = await HttpClientHelper
                 .GetMessagesAsync(url);
-            return new Tuple<bool, List<MessageEntity>>(message.Status, message.Data);
+            var items = message.Data ?? [];
+            return new Tuple<bool, List<MessageEntity>>(message.Status && items.Count > 0, items.AsEnumerable().Reverse().ToList());
         }
         
         public async Task<Tuple<bool, List<IssueEntity>>> GetIssues(string name, int id)
@@ -54,7 +58,7 @@ namespace PikaStatus.Services
             }
             var message = await HttpClientHelper
                 .GetIssuesAsync(url);
-            return new Tuple<bool, List<IssueEntity>>(message.Status, message.Data);
+            return new Tuple<bool, List<IssueEntity>>(message.Status && message.Data != null, message.Data ?? []);
         }
 
         public async Task<Tuple<bool, string>> GetLatestMessage(string systemName)
@@ -66,7 +70,10 @@ namespace PikaStatus.Services
             }
             var apiMessage = await HttpClientHelper.GetMessagesAsync(string
                 .Concat(baseUrl, "?order=1&offset=0&count=1"));
-            return new Tuple<bool, string>(apiMessage.Status, apiMessage.Data.Last().Message);
+            var latestMessage = apiMessage.Data != null && apiMessage.Data.Count > 0
+                ? apiMessage.Data.Last().Message
+                : "No messages available for this system.";
+            return new Tuple<bool, string>(apiMessage.Status && apiMessage.Data != null && apiMessage.Data.Count > 0, latestMessage);
         }
 
         public async Task<Tuple<bool, IList<string>>> GetAllSystems()
@@ -77,7 +84,7 @@ namespace PikaStatus.Services
                 return new Tuple<bool, IList<string>>(false, []);
             }
             var apiMessage = await HttpClientHelper.GetSystems(baseUrl);
-            return new Tuple<bool, IList<string>>(apiMessage.Status, apiMessage.Data);
+            return new Tuple<bool, IList<string>>(apiMessage.Status && apiMessage.Data != null, apiMessage.Data ?? []);
         }
 
         public async Task<Tuple<bool, string>> GetSystemStateText(string systemName)
@@ -89,7 +96,7 @@ namespace PikaStatus.Services
             }
             var apiMessage = await HttpClientHelper.GetSystemStateText(baseUrl);
 
-            return new Tuple<bool, string>(apiMessage.Status, apiMessage.Data ?? "Warning");
+            return new Tuple<bool, string>(apiMessage.Status, apiMessage.Data ?? "Unknown");
         }
     }
 }

@@ -1,0 +1,57 @@
+@inherits LayoutComponentBase
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
+
+@{
+    var coreAddress = Configuration.GetSection("CoreAddress").Value ?? "https://core.lukas-bownik.net";
+    var currentYear = DateTime.UtcNow.Year;
+}
+
+<div class="legacy-shell">
+    <header class="navbar-fixed">
+        <nav class="z-depth-0 white">
+            <div class="nav-wrapper container">
+                <a class="brand-logo grey-text text-darken-4" href="/">PikaCloud</a>
+
+                <ul class="right hide-on-med-and-down">
+                    <li><a class="grey-text text-darken-3" href="@coreAddress/">Core</a></li>
+                    <li><a class="grey-text text-darken-3" href="https://note.lukas-bownik.net/">Note</a></li>
+                    <li><a class="grey-text text-darken-3" href="https://chat.lukas-bownik.net/">Chat</a></li>
+                    <li><a class="grey-text text-darken-3" href="/status">Status</a></li>
+                    <li><a class="grey-text text-darken-3" href="@($"{coreAddress}/Identity/Gateway/Login")">Log in</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="section">
+        @Body
+    </main>
+
+    <footer class="page-footer dark">
+        <div class="container">
+            <div class="row">
+                <div class="col s12 m6">
+                    <h6 class="white-text">Informational Stuff</h6>
+                    <ul>
+                        <li><a class="grey-text text-lighten-3" href="https://blog.lukas-bownik.net/posts/pika-cloud-changelog/">Changelog</a></li>
+                        <li><a class="grey-text text-lighten-3" href="@($"{coreAddress}/Core/Policy")">PikaCloud Policies</a></li>
+                    </ul>
+                </div>
+
+                <div class="col s12 m6">
+                    <h6 class="white-text">Cloud Status</h6>
+                    <ul>
+                        <li><a class="grey-text text-lighten-3" href="/status">Status</a></li>
+                        <li><a class="grey-text text-lighten-3" href="https://lukas-bownik.net/">Pika Cloud Console</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-copyright grey darken-4">
+            <div class="container">
+                © @currentYear Ofca - <small>From creativity comes immersion</small>
+            </div>
+        </div>
+    </footer>
+</div>

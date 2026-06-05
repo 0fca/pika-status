@@ -2,52 +2,48 @@
 @using PikaStatus.Components
 
 
-        @if (isDone == true)
-        {
-            <div class="collection-item">
-                <div class="row">
-                    <div class="col s9 m11 l11">
-                        <span class="flow-text grey-text text-darken-3 left mt-3">
-                            @SystemName
-                        </span>
-                    </div>
-                    <div class="col s3 m1 l1 center-align">
-                        <StatusBadge Status="@_badgeText" TooltipText="@_badgeText" />
-                    </div>
-                </div>
-            </div>
-        }
-        else
-        {
-            <div class="collection-item">
-                <ProgressSpinner PromptText = "Loading details..."/>
-            </div>
-        }
+@if (_isLoaded)
+{
+    <article class="pika-status-item">
+        <div>
+            <h3>@SystemName</h3>
+            <p>Current system state probe.</p>
+        </div>
+
+        <span class="pika-status-badge @_messageCardColor">@_badgeText</span>
+    </article>
+}
+else
+{
+    <div class="pika-status-item">
+        <ProgressSpinner PromptText="Loading details..." />
+    </div>
+}
 
 @code{
     [Parameter]
     public string SystemName { get; set; }
-    private Tuple<bool,string> _messageTuple;
-    private string _message = "";
-    private string _badgeText = "";
+    private string _messageCardColor = "";
+    private string _badgeText = "Unknown";
 
-    private bool isDone = false;
+    private bool _isLoaded;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            //_messageTuple = await MessageService.GetLatestMessage(SystemName);
+            var (_, text) = await MessageService.GetSystemStateText(SystemName);
+            _badgeText = string.IsNullOrWhiteSpace(text) ? "Unknown" : text;
+            _messageCardColor = _badgeText.Equals("Graceful", StringComparison.OrdinalIgnoreCase)
+                ? "pika-status-badge-ok"
+                : "pika-status-badge-issue";
         }
-        catch 
+        catch
         {
-            _messageTuple = new Tuple<bool, string>(false, "No messages available for the system.");
+            _messageCardColor = "pika-status-badge-neutral";
+            _badgeText = "Unknown";
         }
-        var (status, text) = await MessageService.GetSystemStateText(SystemName);
-        //_message = _messageTuple.Item2 ?? "Probably no message is available.";
-        isDone = status;
-        _badgeText = text;
-        _badgeText = text;
+
+        _isLoaded = true;
     }
 }
-

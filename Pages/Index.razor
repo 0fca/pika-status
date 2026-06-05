@@ -1,58 +1,153 @@
 ﻿@page "/"
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
 
-<!--[if IE]>
-  <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="https://browsehappy.com/">upgrade your browser</a> to improve your experience and security.</p>
-<![endif]-->
+<PageTitle>PikaCloud :: Cloudfront</PageTitle>
 
-<div class="container">
-    <div class="row center">
-        <h1 class="center" style="margin-bottom: 0;">Welcome to Pika Cloud!</h1>
-    </div>
-    <div class="row" style="margin-bottom: 15px;">
-        <small style="color: var(--accent);">The cloud storage - private and secure by design</small>
-    </div>
-    <div class="row center">
-        <div class="col s12 m6 l4">
-            <div class="card small havelock white-text">
-                <span class="card-title">Discover...</span>
-                <div class="card-content flow-text">
-                    tech stuff, games, films and some more with Pika Core, just follow the link below
-                </div>
-                <div class="card-action">
-                    <a href="https://core.lukas-bownik.net/">Pika Core</a>
-                </div>
+<div class="pika-page">
+    <PikaCloudHeader />
+
+    <main class="pika-shell">
+        <section class="pika-hero" aria-labelledby="cloudfront-title">
+            <div class="pika-status-strip" aria-label="Cloudfront status">
+                <span>NODE: CLOUDFRONT</span>
+                <span>@SessionLabel</span>
+                <span>STORAGE BUS READY</span>
+                <span>STATUS BUS READY</span>
             </div>
-        </div>
-        <div class="col s12 m6 l4">
-            <div class="card small havelock white-text">
-                <span class="card-title">Write down...</span>
-                <div class="card-content flow-text">
-                    whatever is on your mind with Pika Note - a custom, web-based notepad  
+
+            <div class="pika-hero-grid">
+                <div class="pika-mark-panel">
+                    <div class="pika-pixel-cloud" aria-hidden="true">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+
+                    <p class="pika-mark-caption">S1 = SYSTEM STACK CONNECTION: OK</p>
                 </div>
-                <div class="card-action">
-                    <a href="https://note.lukas-bownik.net/">Pika Note</a>
+
+                <div class="pika-hero-content">
+                    <p class="pika-eyebrow">pika://cloudfront</p>
+
+                    <h1 id="cloudfront-title">PikaCloud</h1>
+
+                    <p class="pika-lead">
+                      Private and customizable DMS solution with AI support. <strong>Private</strong> and <strong>secure</strong> by design.
+                    </p>
+
+                    <div class="pika-actions">
+                        <AuthorizeView>
+                            <Authorized>
+                                <a class="pika-button pika-button-secondary" href="https://core.lukas-bownik.net/">
+                                    Go to account
+                                </a>
+                            </Authorized>
+                            <NotAuthorized>
+                                <a class="pika-button pika-button-secondary" href="https://api-core.lukas-bownik.net/Identity/Gateway/Login">
+                                    Log in
+                                </a>
+                            </NotAuthorized>
+                        </AuthorizeView>
+                    </div>
                 </div>
+
+                <aside class="pika-hero-aside" aria-label="Cloudfront routes">
+                    <p class="pika-panel-label">Components</p>
+
+                    <ul class="pika-route-list">
+                        <li><code>S1</code><span>STORAGE BUS (Pika Core)</span></li>
+                        <li><code>S2</code><span>COMMAND BUS (Pika Cloud Console)</span></li>
+                        <li><code>S3</code><span>NOTE STACK (Pika Note)</span></li>
+                        <li><code>S4</code><span>AI TOOL CHAIN (Pika AI Assistant)</span></li>
+                        <li><code>S5</code><span>STATUS BUS (Pika Status)</span></li>
+                    </ul>
+                </aside>
             </div>
-        </div>
-        <div class="col s12 m6 l4">
-            <div class="card small havelock white-text">
-                <span class="card-title">Speed up...</span>
-                <div class="card-content flow-text">
-                    your day-to-day tasks with Pika Chat - AI-powered, tool-based Chat app
+        </section>
+
+        <section class="pika-dock" aria-labelledby="dock-title">
+            <div class="pika-dock-header">
+                <div>
+                    <p class="pika-section-label">APP DOCK</p>
+                    <h2 id="dock-title">Launch into the Pika ecosystem.</h2>
                 </div>
-                <div class="card-action">
-                    <a href="https://chat.lukas-bownik.net/">Pika Chat</a>
-                </div>
+
+                <p class="pika-dock-copy">
+                    Core storage and security services, note and data space, AI tool-based chain and infrastructure visibility are what define Pika Cloud as a modern DMS 
+                </p>
             </div>
-        </div>
-        <div class="col s12 m6 l4"></div>
-        <div class="col s12 m6 l4">
-            <div class="card small havelock white-text">
-                <span class="card-title">Reach...</span>
-                <div class="card-content flow-text">
-                    out soon and stay tuned for what's about to come!
-                </div>
+
+            <div class="pika-app-grid" aria-label="Pika applications">
+                @foreach (var card in AppCards)
+                {
+                    <PikaAppCard
+                        Number="@card.Number"
+                        SystemLabel="@card.SystemLabel"
+                        Title="@card.Title"
+                        Description="@card.Description"
+                        Url="@card.Url"
+                        Tone="@card.Tone" />
+                }
+
+                @for (var i = 0; i < PlaceholderCount; i++)
+                {
+                    <article class="pika-app-card pika-app-card-placeholder" aria-hidden="true">
+                        <div class="pika-app-card-link">
+                            <span class="pika-card-meta">
+                                <span>RESERVED / FUTURE NODE</span>
+                            </span>
+
+                            <span class="pika-card-placeholder-mark"></span>
+
+                            <strong class="pika-card-title">Reserved slot</strong>
+
+                            <span class="pika-card-description">
+                                Additional PikaCloud modules can be docked here in the future.
+                            </span>
+                        </div>
+                    </article>
+                }
             </div>
-        </div>
-    </div>
+        </section>
+    </main>
+
+    <PikaCloudFooter />
 </div>
+
+@code {
+    private bool IsAuthorized => HttpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
+    private string? UserName => HttpContextAccessor.HttpContext?.User.Identity?.Name;
+    private string SessionLabel => IsAuthorized
+        ? string.IsNullOrWhiteSpace(UserName) ? "USER SESSION" : $"USER SESSION: {UserName}"
+        : "GUEST SESSION";
+
+    private const int DesktopDockColumns = 4;
+
+    private int PlaceholderCount
+    {
+        get
+        {
+            var remainder = AppCards.Count % DesktopDockColumns;
+            return remainder == 0 ? 0 : DesktopDockColumns - remainder;
+        }
+    }
+
+    private static IReadOnlyList<AppCardItem> AppCards { get; } =
+    [
+        new("S1", "STORAGE BUS", "Pika Core", "Browse files, objects and cloud resources.", "https://core.lukas-bownik.net/", "salmon"),
+        new("S2", "COMMAND BUS", "Pika Cloud Console", "Manage system wide messages, users' profile settings along with users' data and configure PikaCloud globally", "https://cloud.lukas-bownik.net/Message/PikaCloudfront", "mint"),
+        new("S3", "NOTE STACK", "Pika Note", "Write down and organize whatever is on your mind.", "https://note.lukas-bownik.net/", "mint"),
+        new("S4", "AI TOOL CHAIN", "Pika AI Assistant", "Speed up daily workflows with AI-powered tools.", "https://ai.lukas-bownik.net/", "blue"),
+        new("S5", "STATUS BUS", "Pika Status", "Check service health, availability and infrastructure state.", "/status", "lilac")
+    ];
+
+    private sealed record AppCardItem(
+        string Number,
+        string SystemLabel,
+        string Title,
+        string Description,
+        string Url,
+        string Tone);
+}
