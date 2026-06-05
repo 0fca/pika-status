@@ -1,5 +1,5 @@
 ﻿@page "/"
-@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+@using System.Security.Claims
 
 <PageTitle>PikaCloud :: Cloudfront</PageTitle>
 
@@ -10,7 +10,14 @@
         <section class="pika-hero" aria-labelledby="cloudfront-title">
             <div class="pika-status-strip" aria-label="Cloudfront status">
                 <span>NODE: CLOUDFRONT</span>
-                <span>@SessionLabel</span>
+                <AuthorizeView Context="authState">
+                    <Authorized>
+                        <span>@GetSessionLabel(authState.User)</span>
+                    </Authorized>
+                    <NotAuthorized>
+                        <span>GUEST SESSION</span>
+                    </NotAuthorized>
+                </AuthorizeView>
                 <span>STORAGE BUS READY</span>
                 <span>STATUS BUS READY</span>
             </div>
@@ -117,13 +124,19 @@
 </div>
 
 @code {
-    private bool IsAuthorized => HttpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
-    private string? UserName => HttpContextAccessor.HttpContext?.User.Identity?.Name;
-    private string SessionLabel => IsAuthorized
-        ? string.IsNullOrWhiteSpace(UserName) ? "USER SESSION" : $"USER SESSION: {UserName}"
-        : "GUEST SESSION";
-
     private const int DesktopDockColumns = 4;
+
+    private static string GetSessionLabel(ClaimsPrincipal user)
+    {
+        var userName =
+            user.Identity?.Name ??
+            user.FindFirst(ClaimTypes.Name)?.Value ??
+            user.FindFirst("preferred_username")?.Value;
+
+        return string.IsNullOrWhiteSpace(userName)
+            ? "USER SESSION"
+            : $"USER SESSION: {userName}";
+    }
 
     private int PlaceholderCount
     {
