@@ -14,7 +14,7 @@ namespace PikaStatus
                 .AddCommandLine(args)
                 .Build();
 
-            var port = 8001;
+            var port = 12000;
 
             var host = WebHost.CreateDefaultBuilder(args)
                 .ConfigureLogging(l =>
