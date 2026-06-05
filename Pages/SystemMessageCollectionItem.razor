@@ -45,8 +45,8 @@ else
         }
 
         var (status, text) = await MessageService.GetSystemStateText(SystemName);
-        _message = _messageTuple.Item2 ?? "Probably no message is available.";
-        _messageCardColor = text.Equals("Graceful") ? "pika-status-badge-ok" : "pika-status-badge-issue";
-        _badgeText = text;
+        _message = string.IsNullOrWhiteSpace(_messageTuple.Item2) ? "No messages available for this system." : _messageTuple.Item2;
+        _messageCardColor = text.Equals("Graceful", StringComparison.OrdinalIgnoreCase) ? "pika-status-badge-ok" : "pika-status-badge-issue";
+        _badgeText = string.IsNullOrWhiteSpace(text) ? "Unknown" : text;
     }
 }

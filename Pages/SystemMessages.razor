@@ -65,7 +65,7 @@
                 }
             </section>
         }
-        else if (_messageEntities != null)
+        else if (_isLoaded)
         {
             <DataNotAvailable />
         }
@@ -81,13 +81,22 @@
 @code{
     [Parameter]
     public string SystemName { get; set; }
-    private Tuple<bool,List<MessageEntity>> _messageTuple;
     private List<MessageEntity>? _messageEntities = null;
+    private bool _isLoaded;
 
     protected override async Task OnInitializedAsync()
     {
-        _messageTuple = await MessageService.GetMessages(SystemName);
-        _messageEntities ??= _messageTuple.Item2;
+        try
+        {
+            var (_, messages) = await MessageService.GetMessages(SystemName);
+            _messageEntities = messages ?? [];
+        }
+        catch
+        {
+            _messageEntities = [];
+        }
+
+        _isLoaded = true;
     }
 
     private static MessageType ValidateMessageType(MessageType messageType)

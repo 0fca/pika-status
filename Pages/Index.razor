@@ -123,7 +123,6 @@
 </div>
 
 @code {
-    private string SessionLabel => IsAuthorized ? "USER SESSION" : "GUEST SESSION";
-
     private bool IsAuthorized => HttpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
+    private string SessionLabel => IsAuthorized ? "USER SESSION" : "GUEST SESSION";
 }

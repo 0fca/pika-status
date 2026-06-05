@@ -2,7 +2,7 @@
 @using PikaStatus.Components
 
 
-@if (isDone)
+@if (_isLoaded)
 {
     <article class="pika-status-item">
         <div>
@@ -23,27 +23,27 @@ else
 @code{
     [Parameter]
     public string SystemName { get; set; }
-    private Tuple<bool,string> _messageTuple;
     private string _messageCardColor = "";
-    private string _message = "";
-    private string _badgeText = "";
+    private string _badgeText = "Unknown";
 
-    private bool isDone = false;
+    private bool _isLoaded;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            //_messageTuple = await MessageService.GetLatestMessage(SystemName);
+            var (_, text) = await MessageService.GetSystemStateText(SystemName);
+            _badgeText = string.IsNullOrWhiteSpace(text) ? "Unknown" : text;
+            _messageCardColor = _badgeText.Equals("Graceful", StringComparison.OrdinalIgnoreCase)
+                ? "pika-status-badge-ok"
+                : "pika-status-badge-issue";
         }
-        catch 
+        catch
         {
-            _messageTuple = new Tuple<bool, string>(false, "No messages available for the system.");
+            _messageCardColor = "pika-status-badge-neutral";
+            _badgeText = "Unknown";
         }
-        var (status, text) = await MessageService.GetSystemStateText(SystemName);
-        //_message = _messageTuple.Item2 ?? "Probably no message is available.";
-        isDone = status;
-        _messageCardColor = text.Equals("Graceful") ? "pika-status-badge-ok" : "pika-status-badge-issue";
-        _badgeText = text;
+
+        _isLoaded = true;
     }
 }

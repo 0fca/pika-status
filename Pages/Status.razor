@@ -78,7 +78,16 @@
             else if (!_isOkLoadingSystems && !string.IsNullOrEmpty(_mainPanelMessage))
             {
                 <section class="pika-status-panel">
-                    <p class="pika-feedback-note">@_mainPanelMessage</p>
+                    <div class="pika-status-panel-header">
+                        <div>
+                            <p class="pika-panel-label">SYSTEM STATE</p>
+                            <h2>Systems unavailable</h2>
+                        </div>
+
+                        <span class="pika-status-badge pika-status-badge-issue">Offline</span>
+                    </div>
+
+                    <p class="pika-view-summary">@_mainPanelMessage</p>
                 </section>
             }
             else
@@ -112,6 +121,7 @@
         {
             var (message, status) = await MessageService.GetOverallStatus();
             IsHealthy = status;
+            _mainPanelMessage = message;
             var result = await sessionStorageService.ContainKeyAsync("SystemList");
             var ttlSet = await sessionStorageService.ContainKeyAsync("TTL");
             var ttl = await sessionStorageService.GetItemAsync<DateTime>("TTL");
@@ -121,9 +131,8 @@
             }
             if (result && ttl > DateTime.UtcNow)
             {
-                _systems = await sessionStorageService.GetItemAsync<IList<string>>("SystemList");
+                _systems = await sessionStorageService.GetItemAsync<IList<string>>("SystemList") ?? new List<string>();
                 _isOkLoadingSystems = true;
-                _mainPanelMessage = message;
             }
             else
             {
@@ -135,13 +144,12 @@
                         _systems = systemList;
                     }
                     _isOkLoadingSystems = isOkayLoadingSystems;
-                    _mainPanelMessage = message;
                     await sessionStorageService.SetItemAsync("SystemList", _systems);
                     await sessionStorageService.SetItemAsync("TTL", DateTime.UtcNow.AddMinutes(2));
                 }
                 else
                 {
-                    _isOkLoadingSystems = !status;
+                    _isOkLoadingSystems = false;
                 }
             }
 
@@ -149,6 +157,7 @@
         catch
         {
             isError = true;
+            _mainPanelMessage = "Cloud status could not be loaded right now.";
         }
     }
 }
