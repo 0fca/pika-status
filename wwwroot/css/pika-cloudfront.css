@@ -804,12 +804,33 @@
     box-shadow: 6px 6px 0 rgba(52, 44, 37, 0.12);
 }
 
+.pika-app-card-placeholder {
+    border-style: dotted;
+    background: transparent;
+    box-shadow: none;
+    opacity: 0.72;
+}
+
+.pika-app-card-placeholder::before {
+    border-style: dotted;
+}
+
+.pika-app-card-placeholder:hover {
+    transform: none;
+    box-shadow: none;
+}
+
 .pika-app-card-link {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: auto auto auto 1fr auto;
     gap: 18px;
+    min-height: 100%;
     min-width: 0;
     padding: 18px;
+}
+
+.pika-app-card-placeholder .pika-app-card-link {
+    justify-content: center;
 }
 
 .pika-card-meta {
@@ -825,8 +846,8 @@
 .pika-card-footer {
     display: flex;
     justify-content: flex-end;
-    margin-top: auto;
-    padding-top: 14px;
+    align-self: end;
+    padding-top: 10px;
     padding-right: 6px;
 }
 
@@ -920,6 +941,14 @@
     color: var(--pika-text-muted);
     line-height: 1.6;
     overflow-wrap: anywhere;
+}
+
+.pika-card-placeholder-mark {
+    display: inline-block;
+    width: 88px;
+    height: 22px;
+    border: 2px dotted var(--pika-line-soft);
+    border-radius: var(--pika-radius-xs);
 }
 
 .pika-card-open {

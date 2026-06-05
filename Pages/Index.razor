@@ -10,14 +10,7 @@
         <section class="pika-hero" aria-labelledby="cloudfront-title">
             <div class="pika-status-strip" aria-label="Cloudfront status">
                 <span>NODE: CLOUDFRONT</span>
-                <AuthorizeView>
-                  <Authorized>
-                    <span>USER SESSION</span>
-                  </Authorized>
-                  <NotAuthorized>
-                    <span>GUEST SESSION</span>
-                  </NotAuthorized>
-                </AuthorizeView>
+                <span>@SessionLabel</span>
                 <span>STORAGE BUS READY</span>
                 <span>STATUS BUS READY</span>
             </div>
@@ -41,15 +34,14 @@
                     <h1 id="cloudfront-title">PikaCloud</h1>
 
                     <p class="pika-lead">
-                        Private object cloud for storage, notes, AI tools and infrastructure panels —
-                        served through the Pika ecosystem.
+                      Private and customizable DMS solution with AI support. <strong>Private</strong> and <strong>secure</strong> by design.
                     </p>
 
                     <div class="pika-actions">
                         <AuthorizeView>
                             <Authorized>
                                 <a class="pika-button pika-button-secondary" href="https://core.lukas-bownik.net/">
-                                    Open account
+                                    Go to account
                                 </a>
                             </Authorized>
                             <NotAuthorized>
@@ -88,45 +80,35 @@
             </div>
 
             <div class="pika-app-grid" aria-label="Pika applications">
-                <PikaAppCard
-                    Number="S1"
-                    SystemLabel="STORAGE BUS"
-                    Title="Pika Core"
-                    Description="Browse files, objects and cloud resources."
-                    Url="https://core.lukas-bownik.net/"
-                    Tone="salmon" />
+                @foreach (var card in AppCards)
+                {
+                    <PikaAppCard
+                        Number="@card.Number"
+                        SystemLabel="@card.SystemLabel"
+                        Title="@card.Title"
+                        Description="@card.Description"
+                        Url="@card.Url"
+                        Tone="@card.Tone" />
+                }
 
-                <PikaAppCard
-                    Number="S2"
-                    SystemLabel="COMMAND BUS"
-                    Title="Pika Cloud Console"
-                    Description="Manage system wide messages, users' profile settings along with users' data and configure PikaCloud globally"
-                    Url="https://cloud.lukas-bownik.net/Message/PikaCloudfront"
-                    Tone="mint" />
+                @for (var i = 0; i < PlaceholderCount; i++)
+                {
+                    <article class="pika-app-card pika-app-card-placeholder" aria-hidden="true">
+                        <div class="pika-app-card-link">
+                            <span class="pika-card-meta">
+                                <span>RESERVED / FUTURE NODE</span>
+                            </span>
 
-                <PikaAppCard
-                    Number="S3"
-                    SystemLabel="NOTE STACK"
-                    Title="Pika Note"
-                    Description="Write down and organize whatever is on your mind."
-                    Url="https://note.lukas-bownik.net/"
-                    Tone="mint" />
+                            <span class="pika-card-placeholder-mark"></span>
 
-                <PikaAppCard
-                    Number="S4"
-                    SystemLabel="AI TOOL CHAIN"
-                    Title="Pika AI Assistant"
-                    Description="Speed up daily workflows with AI-powered tools."
-                    Url="https://ai.lukas-bownik.net/"
-                    Tone="blue" />
+                            <strong class="pika-card-title">Reserved slot</strong>
 
-                <PikaAppCard
-                    Number="S5"
-                    SystemLabel="STATUS BUS"
-                    Title="Pika Status"
-                    Description="Check service health, availability and infrastructure state."
-                    Url="/status"
-                    Tone="lilac" />
+                            <span class="pika-card-description">
+                                Additional PikaCloud modules can be docked here in the future.
+                            </span>
+                        </div>
+                    </article>
+                }
             </div>
         </section>
     </main>
@@ -136,5 +118,36 @@
 
 @code {
     private bool IsAuthorized => HttpContextAccessor.HttpContext?.User.Identity?.IsAuthenticated ?? false;
-    private string SessionLabel => IsAuthorized ? "USER SESSION" : "GUEST SESSION";
+    private string? UserName => HttpContextAccessor.HttpContext?.User.Identity?.Name;
+    private string SessionLabel => IsAuthorized
+        ? string.IsNullOrWhiteSpace(UserName) ? "USER SESSION" : $"USER SESSION: {UserName}"
+        : "GUEST SESSION";
+
+    private const int DesktopDockColumns = 4;
+
+    private int PlaceholderCount
+    {
+        get
+        {
+            var remainder = AppCards.Count % DesktopDockColumns;
+            return remainder == 0 ? 0 : DesktopDockColumns - remainder;
+        }
+    }
+
+    private static IReadOnlyList<AppCardItem> AppCards { get; } =
+    [
+        new("S1", "STORAGE BUS", "Pika Core", "Browse files, objects and cloud resources.", "https://core.lukas-bownik.net/", "salmon"),
+        new("S2", "COMMAND BUS", "Pika Cloud Console", "Manage system wide messages, users' profile settings along with users' data and configure PikaCloud globally", "https://cloud.lukas-bownik.net/Message/PikaCloudfront", "mint"),
+        new("S3", "NOTE STACK", "Pika Note", "Write down and organize whatever is on your mind.", "https://note.lukas-bownik.net/", "mint"),
+        new("S4", "AI TOOL CHAIN", "Pika AI Assistant", "Speed up daily workflows with AI-powered tools.", "https://ai.lukas-bownik.net/", "blue"),
+        new("S5", "STATUS BUS", "Pika Status", "Check service health, availability and infrastructure state.", "/status", "lilac")
+    ];
+
+    private sealed record AppCardItem(
+        string Number,
+        string SystemLabel,
+        string Title,
+        string Description,
+        string Url,
+        string Tone);
 }
