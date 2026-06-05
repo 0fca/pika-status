@@ -10,7 +10,14 @@
         <section class="pika-hero" aria-labelledby="cloudfront-title">
             <div class="pika-status-strip" aria-label="Cloudfront status">
                 <span>NODE: CLOUDFRONT</span>
-                <span>@SessionLabel</span>
+                <AuthorizeView>
+                  <Authorized>
+                    <span>USER SESSION</span>
+                  </Authorized>
+                  <NotAuthorized>
+                    <span>GUEST SESSION</span>
+                  </NotAuthorized>
+                <AuthorizeView>
                 <span>STORAGE BUS READY</span>
             </div>
 

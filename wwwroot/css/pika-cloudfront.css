@@ -254,7 +254,6 @@
 .pika-nav-menu a,
 .pika-auth-menu a,
 .pika-auth-action {
-    width: 100%;
     border-color: var(--pika-line-soft);
     background: transparent;
 }
@@ -471,6 +470,7 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     transition: transform 140ms ease, box-shadow 140ms ease;
+    min-width: fit-content;
 }
 
 .pika-inline-link:hover {
