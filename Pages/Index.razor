@@ -69,6 +69,7 @@
                         <li><code>S2</code><span>COMMAND BUS (Pika Cloud Console)</span></li>
                         <li><code>S3</code><span>NOTE STACK (Pika Note)</span></li>
                         <li><code>S4</code><span>AI TOOL CHAIN (Pika AI Assistant)</span></li>
+                        <li><code>S5</code><span>STATUS BUS (Pika Status)</span></li>
                     </ul>
                 </aside>
             </div>
@@ -88,15 +89,23 @@
 
             <div class="pika-app-grid" aria-label="Pika applications">
                 <PikaAppCard
-                    Number="01"
-                    SystemLabel="OBJECT BUS"
+                    Number="S1"
+                    SystemLabel="STORAGE BUS"
                     Title="Pika Core"
-                    Description="Browse private files, objects and cloud resources."
+                    Description="Browse files, objects and cloud resources."
                     Url="https://core.lukas-bownik.net/"
                     Tone="salmon" />
 
                 <PikaAppCard
-                    Number="02"
+                    Number="S2"
+                    SystemLabel="COMMAND BUS"
+                    Title="Pika Cloud Console"
+                    Description="Internal system component allowing system-wide management"
+                    Url="https://cloud.lukas-bownik.net/Message/PikaCloudfront"
+                    Tone="mint" />
+
+                <PikaAppCard
+                    Number="S3"
                     SystemLabel="NOTE STACK"
                     Title="Pika Note"
                     Description="Write down and organize whatever is on your mind."
@@ -104,16 +113,16 @@
                     Tone="mint" />
 
                 <PikaAppCard
-                    Number="03"
-                    SystemLabel="TOOL AI ASSISTANT"
+                    Number="S4"
+                    SystemLabel="AI TOOL CHAIN"
                     Title="Pika AI Assistant"
                     Description="Speed up daily workflows with AI-powered tools."
                     Url="https://ai.lukas-bownik.net/"
                     Tone="blue" />
 
                 <PikaAppCard
-                    Number="04"
-                    SystemLabel="STATUS NODE"
+                    Number="S5"
+                    SystemLabel="STATUS BUS"
                     Title="Pika Status"
                     Description="Check service health, availability and infrastructure state."
                     Url="/status"
