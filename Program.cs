@@ -14,7 +14,7 @@ namespace PikaStatus
                 .AddCommandLine(args)
                 .Build();
 
-            var port = ReadPortFromStdIn(args);
+            var port = 8001;
 
             var host = WebHost.CreateDefaultBuilder(args)
                 .ConfigureLogging(l =>
@@ -27,20 +27,6 @@ namespace PikaStatus
                 .UseUrls($"http://status.cloud.localhost:{port}")
                 .Build();
             host.Run();
-        }
-
-        private static int ReadPortFromStdIn(IReadOnlyList<string> args)
-        {
-            var port = 8001;
-            try
-            {
-                port = int.Parse(args[0]);
-            }
-            catch
-            {
-                // ignored
-            }
-            return port;
         }
     }
 }

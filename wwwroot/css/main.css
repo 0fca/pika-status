@@ -46,6 +46,17 @@ fieldset {
   padding: 0;
 }
 
+.input-field input::placeholder {
+  color: var(--color-text-muted) !important;
+}
+
+.white-text input {
+  color: var(--color-text) !important;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
 textarea {
   resize: vertical;
 }

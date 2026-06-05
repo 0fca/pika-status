@@ -1,0 +1,119 @@
+/* ==========================================================================
+   Status Badge Component - Modern Circular Design
+   ========================================================================== */
+
+.status-badge-container {
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.status-badge:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Status-specific colors */
+.status-badge-graceful {
+    background: linear-gradient(135deg, #4caf50 0%, #66bb6a 100%);
+    color: white;
+}
+
+.status-badge-down {
+    background: linear-gradient(135deg, #f44336 0%, #ef5350 100%);
+    color: white;
+}
+
+/* Icon styling */
+.status-icon {
+    width: 20px;
+    height: 20px;
+    display: block;
+}
+
+/* CSS-only Tooltip */
+.status-badge::before {
+    content: attr(data-tooltip);
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%) translateY(-4px);
+    background-color: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 99999;
+    letter-spacing: 0.3px;
+}
+
+/* Tooltip arrow */
+.status-badge::after {
+    content: '';
+    position: absolute;
+    bottom: calc(100% + 2px);
+    left: 50%;
+    transform: translateX(-50%);
+    border: 6px solid transparent;
+    border-top-color: rgba(0, 0, 0, 0.9);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+    z-index: 99999;
+}
+
+/* Show tooltip on hover */
+.status-badge:hover::before {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.status-badge:hover::after {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+    .status-badge {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .status-icon {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    .status-badge {
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+    
+    .status-badge:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+    }
+}
