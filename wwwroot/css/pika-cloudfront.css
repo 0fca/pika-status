@@ -824,7 +824,6 @@
     display: grid;
     grid-template-rows: auto auto auto 1fr auto;
     gap: 18px;
-    min-height: 100%;
     min-width: 0;
     padding: 18px;
 }
