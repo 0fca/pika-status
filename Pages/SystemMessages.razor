@@ -32,7 +32,7 @@
 
                 <label class="pika-filter-field" for="message-type-filter">
                     <span>Message type</span>
-                    <select id="message-type-filter" class="pika-filter-select" value="@_selectedMessageTypeValue" @onchange="OnMessageTypeChanged">
+                    <select id="message-type-filter" class="pika-filter-select" @bind="_selectedMessageTypeValue" @bind:after="OnMessageTypeChangedAsync">
                         <option value="">All types</option>
                         @foreach (var messageType in FilterableMessageTypes)
                         {
@@ -45,61 +45,59 @@
 
         @if (_messageEntities.Count > 0)
         {
-            <>
-                <section class="pika-message-grid" aria-label="System messages">
-                    @foreach (var message in _messageEntities)
-                    {
-                        var messageType = NormalizeMessageType(message.MessageType);
-                        <article class="pika-message-card">
-                            <div class="pika-message-card-header">
-                                <span class="pika-status-badge @GetBadgeClass(messageType)">@GetMessageTypeLabel(messageType)</span>
-                                <span class="pika-inline-meta">ID @message.Id</span>
+            <section class="pika-message-grid" aria-label="System messages">
+                @foreach (var message in _messageEntities)
+                {
+                    var messageType = NormalizeMessageType(message.MessageType);
+                    <article class="pika-message-card">
+                        <div class="pika-message-card-header">
+                            <span class="pika-status-badge @GetBadgeClass(messageType)">@GetMessageTypeLabel(messageType)</span>
+                            <span class="pika-inline-meta">ID @message.Id</span>
+                        </div>
+
+                        <h2>@message.Message</h2>
+
+                        <dl class="pika-message-meta">
+                            <div>
+                                <dt>Created</dt>
+                                <dd>@FormatDate(message.CreatedAt)</dd>
                             </div>
+                            <div>
+                                <dt>Updated</dt>
+                                <dd>@FormatDate(message.UpdatedAt)</dd>
+                            </div>
+                        </dl>
 
-                            <h2>@message.Message</h2>
+                        @if (message.MessageType == MessageType.Issue)
+                        {
+                            <div class="pika-message-actions">
+                                <a class="pika-inline-link" href="/@SystemName/Messages/@message.Id/Issues">View issues ↗</a>
+                            </div>
+                        }
+                    </article>
+                }
+            </section>
 
-                            <dl class="pika-message-meta">
-                                <div>
-                                    <dt>Created</dt>
-                                    <dd>@FormatDate(message.CreatedAt)</dd>
-                                </div>
-                                <div>
-                                    <dt>Updated</dt>
-                                    <dd>@FormatDate(message.UpdatedAt)</dd>
-                                </div>
-                            </dl>
-
-                            @if (message.MessageType == MessageType.Issue)
-                            {
-                                <div class="pika-message-actions">
-                                    <a class="pika-inline-link" href="/@SystemName/Messages/@message.Id/Issues">View issues ↗</a>
-                                </div>
-                            }
-                        </article>
-                    }
-                </section>
-
-                <section class="pika-message-stream-footer" aria-live="polite">
-                    @if (_isLoadingMore)
-                    {
-                        <div class="pika-feedback">
-                            <span class="pika-spinner" aria-hidden="true"></span>
-                            <span>Loading more messages...</span>
-                        </div>
-                    }
-                    else if (!string.IsNullOrWhiteSpace(_loadError))
-                    {
-                        <div class="pika-feedback pika-feedback-alert">
-                            <span>@_loadError</span>
-                            <button type="button" class="pika-inline-link" @onclick="RetryLoadingAsync">Retry loading</button>
-                        </div>
-                    }
-                    else if (!_hasMoreMessages)
-                    {
-                        <p class="pika-feedback-note">You have reached the oldest available message.</p>
-                    }
-                </section>
-            </>
+            <section class="pika-message-stream-footer" aria-live="polite">
+                @if (_isLoadingMore)
+                {
+                    <div class="pika-feedback">
+                        <span class="pika-spinner" aria-hidden="true"></span>
+                        <span>Loading more messages...</span>
+                    </div>
+                }
+                else if (!string.IsNullOrWhiteSpace(_loadError))
+                {
+                    <div class="pika-feedback pika-feedback-alert">
+                        <span>@_loadError</span>
+                        <button type="button" class="pika-inline-link" @onclick="RetryLoadingAsync">Retry loading</button>
+                    </div>
+                }
+                else if (!_hasMoreMessages)
+                {
+                    <p class="pika-feedback-note">You have reached the oldest available message.</p>
+                }
+            </section>
         }
         else if (_isLoaded && string.IsNullOrWhiteSpace(_loadError))
         {
@@ -140,14 +138,20 @@
     private bool _isLoaded;
     private bool _isLoadingMore;
     private bool _hasMoreMessages = true;
+    private bool _isInteractiveReady;
     private bool _isScrollListenerRegistered;
     private int _offset;
     private string _selectedMessageTypeValue = string.Empty;
     private string _loadError = string.Empty;
+    private string? _loadedSystemName;
 
     protected override async Task OnParametersSetAsync()
     {
-        await ResetAndLoadMessagesAsync();
+        if (_isInteractiveReady && !string.Equals(_loadedSystemName, SystemName, StringComparison.Ordinal))
+        {
+            _selectedMessageTypeValue = string.Empty;
+            await ResetAndLoadMessagesAsync();
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -157,6 +161,10 @@
             _dotNetReference = DotNetObjectReference.Create(this);
             await JSRuntime.InvokeVoidAsync("pikaStatusInfiniteScroll.register", _dotNetReference);
             _isScrollListenerRegistered = true;
+            _isInteractiveReady = true;
+            await ResetAndLoadMessagesAsync();
+            await InvokeAsync(StateHasChanged);
+            return;
         }
 
         if (_isScrollListenerRegistered && _isLoaded && _hasMoreMessages && !_isLoadingMore)
@@ -172,6 +180,7 @@
         _hasMoreMessages = true;
         _isLoaded = false;
         _loadError = string.Empty;
+        _loadedSystemName = SystemName;
         await LoadMoreMessagesAsync();
     }
 
@@ -240,9 +249,8 @@
         await InvokeAsync(StateHasChanged);
     }
 
-    private async Task OnMessageTypeChanged(ChangeEventArgs args)
+    private async Task OnMessageTypeChangedAsync()
     {
-        _selectedMessageTypeValue = args.Value?.ToString() ?? string.Empty;
         await ResetAndLoadMessagesAsync();
     }
 
