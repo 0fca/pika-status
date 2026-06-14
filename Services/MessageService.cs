@@ -5,6 +5,7 @@ using System.Net.Mime;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Pika.Domain.Status.Data;
+using Pika.Domain.Status.Models;
 using PikaStatus.Services.Helpers;
 
 namespace PikaStatus.Services
@@ -15,14 +16,21 @@ namespace PikaStatus.Services
         public MessageService(IConfiguration configuration)
         {
             _configuration = configuration;
-            HttpClientHelper.ConfigureClient(configuration.GetConnectionString("StatusApiBase"), 
+            HttpClientHelper.ConfigureClient(configuration.GetConnectionString("StatusApiBase")
+                ?? throw new InvalidOperationException("Connection string 'StatusApiBase' is not configured."),
                 MediaTypeNames.Application.Json);
         }
 
         public async Task<Tuple<string, bool>> GetOverallStatus()
         {
+            var endpoint = _configuration.GetConnectionString("OverallStatusEndpoint");
+            if (string.IsNullOrEmpty(endpoint))
+            {
+                return new Tuple<string, bool>("Cloud status is temporarily unavailable.", false);
+            }
+
             var statusMessage = await HttpClientHelper
-                .GetSingleMessageAsync(_configuration.GetConnectionString("OverallStatusEndpoint"));
+                .GetSingleMessageAsync(endpoint);
             var message = statusMessage.Messages.Count > 0
                 ? statusMessage.Messages.Pop()
                 : "Cloud status is temporarily unavailable.";
@@ -31,14 +39,40 @@ namespace PikaStatus.Services
         
         public async Task<Tuple<Stack<string>, bool>> GetOverallStatusDetailed()
         {
+            var endpoint = _configuration.GetConnectionString("OverallStatusEndpoint");
+            if (string.IsNullOrEmpty(endpoint))
+            {
+                return new Tuple<Stack<string>, bool>(new Stack<string>(["Cloud status is temporarily unavailable."]), false);
+            }
+
             var statusMessage = await HttpClientHelper
-                .GetSingleMessageAsync(_configuration.GetConnectionString("OverallStatusEndpoint"));
+                .GetSingleMessageAsync(endpoint);
             return new Tuple<Stack<string>, bool>(statusMessage.Messages, statusMessage.Status);
         }
 
-        public async Task<Tuple<bool, List<MessageEntity>>> GetMessages(string systemName)
+        public async Task<Tuple<bool, List<MessageEntity>>> GetMessages(string systemName, int count = 25, int offset = 0, MessageType? messageType = null)
         {
-            var url = string.Format(_configuration.GetConnectionString($"MessagesEndpoint"), systemName);
+            var endpointFormat = _configuration.GetConnectionString("MessagesEndpoint");
+            if (string.IsNullOrEmpty(endpointFormat))
+            {
+                return new Tuple<bool, List<MessageEntity>>(false, []);
+            }
+
+            var baseUrl = string.Format(endpointFormat, systemName);
+
+            var queryParameters = new List<string>
+            {
+                "order=1",
+                $"offset={offset}",
+                $"count={count}"
+            };
+
+            if (messageType.HasValue)
+            {
+                queryParameters.Add($"messageType={(int)messageType.Value}");
+            }
+
+            var url = string.Concat(baseUrl, "?", string.Join("&", queryParameters));
             if (string.IsNullOrEmpty(url))
             {
                 return new Tuple<bool, List<MessageEntity>>(false, []);
@@ -46,16 +80,18 @@ namespace PikaStatus.Services
             var message = await HttpClientHelper
                 .GetMessagesAsync(url);
             var items = message.Data ?? [];
-            return new Tuple<bool, List<MessageEntity>>(message.Status && items.Count > 0, items.AsEnumerable().Reverse().ToList());
+            return new Tuple<bool, List<MessageEntity>>(message.Status, items);
         }
         
         public async Task<Tuple<bool, List<IssueEntity>>> GetIssues(string name, int id)
         {
-            var url = string.Format(_configuration.GetConnectionString($"IssuesEndpoint"), name, id);
-            if (string.IsNullOrEmpty(url))
+            var endpointFormat = _configuration.GetConnectionString("IssuesEndpoint");
+            if (string.IsNullOrEmpty(endpointFormat))
             {
-                return new Tuple<bool, List<IssueEntity>>(false, null);
+                return new Tuple<bool, List<IssueEntity>>(false, []);
             }
+
+            var url = string.Format(endpointFormat, name, id);
             var message = await HttpClientHelper
                 .GetIssuesAsync(url);
             return new Tuple<bool, List<IssueEntity>>(message.Status && message.Data != null, message.Data ?? []);
@@ -63,22 +99,24 @@ namespace PikaStatus.Services
 
         public async Task<Tuple<bool, string>> GetLatestMessage(string systemName)
         {
-            var baseUrl = string.Format(_configuration.GetConnectionString($"MessagesEndpoint"), systemName);
-            if (string.IsNullOrEmpty(baseUrl))
+            var endpointFormat = _configuration.GetConnectionString("MessagesEndpoint");
+            if (string.IsNullOrEmpty(endpointFormat))
             {
-                return new Tuple<bool, string>(false, null);
+                return new Tuple<bool, string>(false, "No messages available for this system.");
             }
+
+            var baseUrl = string.Format(endpointFormat, systemName);
             var apiMessage = await HttpClientHelper.GetMessagesAsync(string
                 .Concat(baseUrl, "?order=1&offset=0&count=1"));
             var latestMessage = apiMessage.Data != null && apiMessage.Data.Count > 0
-                ? apiMessage.Data.Last().Message
+                ? apiMessage.Data.First().Message
                 : "No messages available for this system.";
             return new Tuple<bool, string>(apiMessage.Status && apiMessage.Data != null && apiMessage.Data.Count > 0, latestMessage);
         }
 
         public async Task<Tuple<bool, IList<string>>> GetAllSystems()
         {
-            var baseUrl =_configuration.GetConnectionString($"SystemsEndpoint");
+            var baseUrl =_configuration.GetConnectionString("SystemsEndpoint");
             if (string.IsNullOrEmpty(baseUrl))
             {
                 return new Tuple<bool, IList<string>>(false, []);
@@ -89,11 +127,13 @@ namespace PikaStatus.Services
 
         public async Task<Tuple<bool, string>> GetSystemStateText(string systemName)
         {
-            var baseUrl = string.Format(_configuration.GetConnectionString($"SystemTextStateEndpoint"), systemName);
-            if (string.IsNullOrEmpty(baseUrl))
+            var endpointFormat = _configuration.GetConnectionString("SystemTextStateEndpoint");
+            if (string.IsNullOrEmpty(endpointFormat))
             {
                 return new Tuple<bool, string>(false, "Unknown");
             }
+
+            var baseUrl = string.Format(endpointFormat, systemName);
             var apiMessage = await HttpClientHelper.GetSystemStateText(baseUrl);
 
             return new Tuple<bool, string>(apiMessage.Status, apiMessage.Data ?? "Unknown");

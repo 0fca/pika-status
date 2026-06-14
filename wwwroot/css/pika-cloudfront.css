@@ -374,6 +374,44 @@
     margin: 18px 0 0;
 }
 
+.pika-message-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    justify-content: space-between;
+    gap: 16px;
+    margin-top: 18px;
+}
+
+.pika-filter-field {
+    display: grid;
+    gap: 8px;
+    min-width: 220px;
+    color: var(--pika-text-muted);
+    font-family: var(--pika-font-mono);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.pika-filter-select {
+    min-height: 44px;
+    padding: 0 12px;
+    border: 2px solid var(--pika-line);
+    border-radius: var(--pika-radius-xs);
+    background: var(--pika-surface-strong);
+    color: var(--pika-text);
+    font-family: var(--pika-font-body);
+    font-size: 0.95rem;
+}
+
+.pika-message-stream-footer {
+    display: grid;
+    justify-items: center;
+    gap: 12px;
+}
+
 .pika-status-grid,
 .pika-message-grid {
     display: grid;
@@ -450,6 +488,19 @@
     background: #a12828;
 }
 
+.pika-status-badge-warning {
+    background: #ffd166;
+}
+
+.pika-status-badge-error {
+    color: #ffffff;
+    background: #c44536;
+}
+
+.pika-status-badge-maintenance {
+    background: #8ecae6;
+}
+
 .pika-status-badge-neutral {
     background: var(--pika-surface-muted);
 }
@@ -511,6 +562,10 @@
 .pika-feedback-alert {
     color: #ffffff;
     background: #8f2424;
+}
+
+.pika-feedback-alert .pika-inline-link {
+    background: #ffffff;
 }
 
 .pika-feedback-alert .pika-spinner {

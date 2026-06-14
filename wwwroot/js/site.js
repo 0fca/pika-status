@@ -77,3 +77,46 @@ document.addEventListener('DOMContentLoaded', function() {
     }
   });
 });
+
+window.pikaStatusInfiniteScroll = (() => {
+  let dotNetRef = null;
+  let ticking = false;
+
+  const threshold = 320;
+
+  function nearBottom() {
+    return window.innerHeight + window.scrollY >= document.body.offsetHeight - threshold;
+  }
+
+  async function check() {
+    if (!dotNetRef || ticking || !nearBottom()) {
+      return;
+    }
+
+    ticking = true;
+
+    try {
+      await dotNetRef.invokeMethodAsync('LoadMoreFromScrollAsync');
+    } finally {
+      ticking = false;
+    }
+  }
+
+  function onScroll() {
+    void check();
+  }
+
+  return {
+    register(reference) {
+      dotNetRef = reference;
+      window.addEventListener('scroll', onScroll, { passive: true });
+      void check();
+    },
+    unregister() {
+      window.removeEventListener('scroll', onScroll);
+      dotNetRef = null;
+      ticking = false;
+    },
+    check
+  };
+})();

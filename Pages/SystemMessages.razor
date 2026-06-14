@@ -1,9 +1,12 @@
 ﻿@page "/Messages/{SystemName}"
 @using PikaStatus.Models
 @inject Services.MessageService MessageService
+@inject IJSRuntime JSRuntime
 @using PikaStatus.Components
 @using Pika.Domain.Status.Models
 @using Pika.Domain.Status.Data
+@using Newtonsoft.Json
+@implements IAsyncDisposable
 
 <PageTitle>PikaCloud :: Messages :: @SystemName</PageTitle>
 
@@ -24,50 +27,90 @@
                 <a class="pika-button pika-button-secondary" href="/status">Back to status</a>
             </div>
 
-            @if (_messageEntities != null)
-            {
-                <p class="pika-view-summary">@_messageEntities.Count entries loaded.</p>
-            }
+            <div class="pika-message-toolbar">
+                <p class="pika-view-summary">@GetSummaryText()</p>
+
+                <label class="pika-filter-field" for="message-type-filter">
+                    <span>Message type</span>
+                    <select id="message-type-filter" class="pika-filter-select" value="@_selectedMessageTypeValue" @onchange="OnMessageTypeChanged">
+                        <option value="">All types</option>
+                        @foreach (var messageType in FilterableMessageTypes)
+                        {
+                            <option value="@((int)messageType)">@GetMessageTypeLabel(messageType)</option>
+                        }
+                    </select>
+                </label>
+            </div>
         </section>
 
-        @if (_messageEntities != null && _messageEntities.Count > 0)
+        @if (_messageEntities.Count > 0)
         {
-            <section class="pika-message-grid" aria-label="System messages">
-                @foreach (var message in _messageEntities)
-                {
-                    var messageType = ValidateMessageType(message.MessageType);
-                    <article class="pika-message-card">
-                        <div class="pika-message-card-header">
-                            <span class="pika-status-badge @GetBadgeClass(messageType)">@messageType</span>
-                            <span class="pika-inline-meta">ID @message.Id</span>
+            <>
+                <section class="pika-message-grid" aria-label="System messages">
+                    @foreach (var message in _messageEntities)
+                    {
+                        var messageType = NormalizeMessageType(message.MessageType);
+                        <article class="pika-message-card">
+                            <div class="pika-message-card-header">
+                                <span class="pika-status-badge @GetBadgeClass(messageType)">@GetMessageTypeLabel(messageType)</span>
+                                <span class="pika-inline-meta">ID @message.Id</span>
+                            </div>
+
+                            <h2>@message.Message</h2>
+
+                            <dl class="pika-message-meta">
+                                <div>
+                                    <dt>Created</dt>
+                                    <dd>@FormatDate(message.CreatedAt)</dd>
+                                </div>
+                                <div>
+                                    <dt>Updated</dt>
+                                    <dd>@FormatDate(message.UpdatedAt)</dd>
+                                </div>
+                            </dl>
+
+                            @if (message.MessageType == MessageType.Issue)
+                            {
+                                <div class="pika-message-actions">
+                                    <a class="pika-inline-link" href="/@SystemName/Messages/@message.Id/Issues">View issues ↗</a>
+                                </div>
+                            }
+                        </article>
+                    }
+                </section>
+
+                <section class="pika-message-stream-footer" aria-live="polite">
+                    @if (_isLoadingMore)
+                    {
+                        <div class="pika-feedback">
+                            <span class="pika-spinner" aria-hidden="true"></span>
+                            <span>Loading more messages...</span>
                         </div>
-
-                        <h2>@message.Message</h2>
-
-                        <dl class="pika-message-meta">
-                            <div>
-                                <dt>Created</dt>
-                                <dd>@FormatDate(message.CreatedAt)</dd>
-                            </div>
-                            <div>
-                                <dt>Updated</dt>
-                                <dd>@FormatDate(message.UpdatedAt)</dd>
-                            </div>
-                        </dl>
-
-                        @if (message.MessageType == MessageType.Issue)
-                        {
-                            <div class="pika-message-actions">
-                                <a class="pika-inline-link" href="/@SystemName/Messages/@message.Id/Issues">View issues ↗</a>
-                            </div>
-                        }
-                    </article>
-                }
-            </section>
+                    }
+                    else if (!string.IsNullOrWhiteSpace(_loadError))
+                    {
+                        <div class="pika-feedback pika-feedback-alert">
+                            <span>@_loadError</span>
+                            <button type="button" class="pika-inline-link" @onclick="RetryLoadingAsync">Retry loading</button>
+                        </div>
+                    }
+                    else if (!_hasMoreMessages)
+                    {
+                        <p class="pika-feedback-note">You have reached the oldest available message.</p>
+                    }
+                </section>
+            </>
         }
-        else if (_isLoaded)
+        else if (_isLoaded && string.IsNullOrWhiteSpace(_loadError))
         {
             <DataNotAvailable />
+        }
+        else if (!string.IsNullOrWhiteSpace(_loadError))
+        {
+            <section class="pika-feedback pika-feedback-alert" role="alert">
+                <span>@_loadError</span>
+                <button type="button" class="pika-inline-link" @onclick="RetryLoadingAsync">Retry loading</button>
+            </section>
         }
         else
         {
@@ -79,37 +122,157 @@
 </div>
 
 @code{
+    private const int PageSize = 25;
+    private static readonly MessageType[] FilterableMessageTypes =
+    [
+        MessageType.Issue,
+        MessageType.Info,
+        MessageType.Warning,
+        MessageType.Error,
+        MessageType.Maintenance
+    ];
+
     [Parameter]
-    public string SystemName { get; set; }
-    private List<MessageEntity>? _messageEntities = null;
+    public string SystemName { get; set; } = string.Empty;
+
+    private readonly List<MessageEntity> _messageEntities = [];
+    private DotNetObjectReference<SystemMessages>? _dotNetReference;
     private bool _isLoaded;
+    private bool _isLoadingMore;
+    private bool _hasMoreMessages = true;
+    private bool _isScrollListenerRegistered;
+    private int _offset;
+    private string _selectedMessageTypeValue = string.Empty;
+    private string _loadError = string.Empty;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnParametersSetAsync()
     {
-        try
-        {
-            var (_, messages) = await MessageService.GetMessages(SystemName);
-            _messageEntities = messages ?? [];
-        }
-        catch
-        {
-            _messageEntities = [];
-        }
-
-        _isLoaded = true;
+        await ResetAndLoadMessagesAsync();
     }
 
-    private static MessageType ValidateMessageType(MessageType messageType)
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        var enumVals = typeof(MessageType).GetEnumValues();
-        foreach (var enumVal in enumVals)
+        if (firstRender)
         {
-            if (enumVal.Equals(messageType))
-            {
-                return (MessageType)enumVal;
-            }
+            _dotNetReference = DotNetObjectReference.Create(this);
+            await JSRuntime.InvokeVoidAsync("pikaStatusInfiniteScroll.register", _dotNetReference);
+            _isScrollListenerRegistered = true;
         }
-        return MessageType.None;
+
+        if (_isScrollListenerRegistered && _isLoaded && _hasMoreMessages && !_isLoadingMore)
+        {
+            await JSRuntime.InvokeVoidAsync("pikaStatusInfiniteScroll.check");
+        }
+    }
+
+    private async Task ResetAndLoadMessagesAsync()
+    {
+        _messageEntities.Clear();
+        _offset = 0;
+        _hasMoreMessages = true;
+        _isLoaded = false;
+        _loadError = string.Empty;
+        await LoadMoreMessagesAsync();
+    }
+
+    private async Task LoadMoreMessagesAsync()
+    {
+        if (_isLoadingMore || !_hasMoreMessages)
+        {
+            return;
+        }
+
+        _isLoadingMore = true;
+        _loadError = string.Empty;
+
+        try
+        {
+            var (status, messages) = await MessageService.GetMessages(SystemName, PageSize, _offset, ParseSelectedMessageType());
+
+            if (!status)
+            {
+                _loadError = "System messages could not be loaded right now.";
+                _hasMoreMessages = false;
+                return;
+            }
+
+            if (messages.Count == 0)
+            {
+                _hasMoreMessages = false;
+                return;
+            }
+
+            _messageEntities.AddRange(messages);
+            _offset += messages.Count;
+            _hasMoreMessages = messages.Count == PageSize;
+        }
+        catch (HttpRequestException)
+        {
+            _loadError = "System messages could not be loaded right now.";
+            _hasMoreMessages = false;
+        }
+        catch (TaskCanceledException)
+        {
+            _loadError = "System messages could not be loaded right now.";
+            _hasMoreMessages = false;
+        }
+        catch (JsonException)
+        {
+            _loadError = "System messages could not be loaded right now.";
+            _hasMoreMessages = false;
+        }
+        catch (InvalidOperationException)
+        {
+            _loadError = "System messages could not be loaded right now.";
+            _hasMoreMessages = false;
+        }
+        finally
+        {
+            _isLoadingMore = false;
+            _isLoaded = true;
+        }
+    }
+
+    [JSInvokable]
+    public async Task LoadMoreFromScrollAsync()
+    {
+        await LoadMoreMessagesAsync();
+        await InvokeAsync(StateHasChanged);
+    }
+
+    private async Task OnMessageTypeChanged(ChangeEventArgs args)
+    {
+        _selectedMessageTypeValue = args.Value?.ToString() ?? string.Empty;
+        await ResetAndLoadMessagesAsync();
+    }
+
+    private async Task RetryLoadingAsync()
+    {
+        _hasMoreMessages = true;
+        _loadError = string.Empty;
+        await LoadMoreMessagesAsync();
+    }
+
+    private MessageType? ParseSelectedMessageType()
+    {
+        return int.TryParse(_selectedMessageTypeValue, out var messageTypeValue) &&
+               Enum.IsDefined(typeof(MessageType), messageTypeValue)
+            ? (MessageType)messageTypeValue
+            : null;
+    }
+
+    private string GetSummaryText()
+    {
+        var typeLabel = ParseSelectedMessageType() is { } messageType
+            ? $"filtered to {GetMessageTypeLabel(messageType)}"
+            : "all message types";
+        var stateLabel = _isLoaded ? $"{_messageEntities.Count} entries loaded" : "Loading entries";
+        return $"{stateLabel}, newest updates first, {typeLabel}.";
+    }
+
+    private static MessageType NormalizeMessageType(MessageType messageType)
+    {
+        return Enum.IsDefined(typeof(MessageType), messageType) ? messageType : MessageType.None;
     }
 
     private static string FormatDate(DateTime dateTime)
@@ -121,10 +284,41 @@
     {
         return messageType switch
         {
+            MessageType.Warning => "pika-status-badge-warning",
+            MessageType.Error => "pika-status-badge-error",
+            MessageType.Maintenance => "pika-status-badge-maintenance",
             MessageType.Info => "pika-status-badge-ok",
             MessageType.Issue => "pika-status-badge-issue",
             _ => "pika-status-badge-neutral"
         };
     }
 
+    private static string GetMessageTypeLabel(MessageType messageType)
+    {
+        return messageType switch
+        {
+            MessageType.Issue => "Issue",
+            MessageType.Info => "Info",
+            MessageType.Warning => "Warning",
+            MessageType.Error => "Error",
+            MessageType.Maintenance => "Maintenance",
+            _ => "Unknown"
+        };
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_isScrollListenerRegistered)
+        {
+            try
+            {
+                await JSRuntime.InvokeVoidAsync("pikaStatusInfiniteScroll.unregister");
+            }
+            catch (JSDisconnectedException)
+            {
+            }
+        }
+
+        _dotNetReference?.Dispose();
+    }
 }
