@@ -1,12 +1,14 @@
-﻿using System.Collections.Generic;
+﻿using PikaStatus.Enums.Status;
+using System;
+using System.Collections.Generic;
 
 namespace PikaStatus.Models
 {
     public class ApiMessage<T> : IPayload<T>
     {
-        public T Data { get; set; }
+        public T? Data { get; set; }
         public Stack<string> Messages { get; set; } = new Stack<string>(["There was a problem reading status from system mainframe API"]);
-        public bool Status { get; set; } = true;
+        public Status Status { get; set; } = Status.Success;
 
         public void AddMessage(string message)
         {

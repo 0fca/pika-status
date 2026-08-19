@@ -31,6 +31,7 @@ namespace PikaStatus
             });
 
             services.AddHttpContextAccessor();
+            services.AddHttpClient();
             services.AddBlazoredSessionStorage();
             services.AddHealthChecks();
             services.AddSingleton<MessageService>();
