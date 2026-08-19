@@ -78,14 +78,22 @@ namespace PikaStatus.Services.Helpers
                 try
                 {
                     var response = await _client!.GetAsync(endpoint);
+                    var content = await response.Content.ReadAsStringAsync();
                     if (response.IsSuccessStatusCode)
                     {
-                        return JsonConvert.DeserializeObject<ApiMessage<MessageEntity>>(await response.Content.ReadAsStringAsync())!;
+                        var result = JsonConvert.DeserializeObject<ApiMessage<MessageEntity>>(content)!;
+                        if (result.Status != Status.Success)
+                        {
+                            Serilog.Log.Warning("[HttpClientHelper] API returned Success=True but Status={Status}. Content: {Content}", result.Status, content);
+                        }
+                        return result;
                     }
+                    Serilog.Log.Error("[HttpClientHelper] HTTP Error: {StatusCode}. Content: {Content}", response.StatusCode, content);
                     return new ApiMessage<MessageEntity> { Status = Status.Unknown };
                 }
-                catch
+                catch (Exception e)
                 {
+                    Serilog.Log.Error(e, "[HttpClientHelper] Exception during GetSingleMessageAsync for {Endpoint}", endpoint);
                     return new ApiMessage<MessageEntity> { Status = Status.Unknown };
                 }
             });
