@@ -37,21 +37,24 @@ namespace PikaStatus.Services.Helpers
             {
                 try
                 {
+                    Serilog.Log.Information("[HttpClientHelper] Attempt {Attempt} of {MaxRetries} starting...", attempt + 1, MaxRetries);
                     var result = await action();
                     if (result != null && result.Status != Status.Unknown)
                     {
                         return result;
                     }
+                    Serilog.Log.Warning("[HttpClientHelper] Attempt {Attempt} returned Unknown status.", attempt + 1);
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"[HttpClientHelper] Request failed on attempt {attempt + 1}: {e.Message}");
+                    Serilog.Log.Error(e, "[HttpClientHelper] Request failed on attempt {Attempt}: {Message}", attempt + 1, e.Message);
                 }
 
                 attempt++;
                 if (attempt < MaxRetries)
                 {
                     int delaySeconds = Fibonacci(attempt);
+                    Serilog.Log.Information("[HttpClientHelper] Retrying in {DelaySeconds} seconds...", delaySeconds);
                     await Task.Delay(TimeSpan.FromSeconds(delaySeconds));
                 }
             }
